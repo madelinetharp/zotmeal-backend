@@ -1,3 +1,4 @@
+from http.server import BaseHTTPRequestHandler
 from bs4 import BeautifulSoup
 import json
 import urllib.request
@@ -77,13 +78,25 @@ def scrape_menu_to_str(url):
         k['restaurant'].append(n)
     return json.dumps(k)
 
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
+        brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
+        data = ""
+        if "anteatery" in self.path:
+            data = scrape_menu_to_str(eatery_url)
+        elif "brandywine" in self.path:
+            data = scrape_menu_to_str(brandy_url)
+        else:
+            self.send_response(404)
+            self.send_header('Content-type','text/plain')
+            self.end_headers()
+            self.wfile.write("Invalid path. Needs to be /anteatery or /brandywine".encode())
+            return
+        self.send_response(200)
+        self.send_header('Content-type','application/json')
+        self.end_headers()
+        self.wfile.write(data.encode())
+        return
 
-
-if __name__=='__main__':
-    brandyurl = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
-    eateryurl = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
-    for url, outfile in {(brandyurl,"brandy.json"),(eateryurl,"eatery.json")}:
-        with open(outfile,"w") as file_obj:
-            file_obj.write(scrape_menu_to_str(brandyurl))
-    print("done")
 
