@@ -71,14 +71,14 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         data = ""
         if "anteatery" in self.path:
-            data = scrape_menu_to_str(eatery_url)
+            data = scrape_menu_to_str(eatery_url,"anteatery")
         elif "brandywine" in self.path:
-            data = scrape_menu_to_str(brandy_url)
+            data = scrape_menu_to_str(brandy_url,"brandywine")
         else:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
             self.end_headers()
-            self.wfile.write("Invalid path. Needs to be /anteatery or /brandywine".encode())
+            self.wfile.write("Invalid path. Needs to contain 'anteatery' or 'brandywine'".encode())
             return
         self.send_response(200)
         self.send_header('Content-type','application/json')
