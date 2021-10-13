@@ -62,7 +62,7 @@ def scrape_menu_to_str(url,name):
             station_dict["menu"].append(category_dict)
 
         complete_dict[name].append(station_dict)
-    return json.dumps(complete_dict)
+    return json.dumps(complete_dict,ensure_ascii=False)
 
 eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
 brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
