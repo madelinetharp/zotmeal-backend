@@ -13,7 +13,7 @@ def scrape_menu_to_str(url,name):
         station_dict = dict()
         station_dict['station'] = station_node.find("div", {"class": "station-header-title"}).string
         station_dict['menu'] = []
-        categories = entire_body.find_all("div",{"class": "menu__parentCategory"})
+        categories = station_node.find_all("div",{"class": "menu__parentCategory"})
         for category_node in categories:
             category_dict = dict()
             category_dict["category"] = category_node.find("span",{"class":"categoryName"}).string
@@ -56,13 +56,10 @@ def scrape_menu_to_str(url,name):
                     for x in eatwell.find_all("img"):
                         if x["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
                             item_dict["isWholeGrains"] = True
-
-
                 category_dict["items"].append(item_dict)
             station_dict["menu"].append(category_dict)
-
         complete_dict[name].append(station_dict)
-    return json.dumps(complete_dict,ensure_ascii=False)
+    return json.dumps(complete_dict)
 
 eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
 brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
