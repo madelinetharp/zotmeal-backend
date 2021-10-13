@@ -1,82 +1,68 @@
-from http.server import BaseHTTPRequestHandler
-from bs4 import BeautifulSoup
-import json
-import urllib.request
+from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
+from bs4 import BeautifulSoup#imported to parse site contents into dicts
+import json#imported to format dict as json string
+import urllib.request #imported to get site contents from internet
 
-def scrape_menu_to_str(url):
-    soup = BeautifulSoup(urllib.request.urlopen(url).read(), 'html.parser')
-    menudiv = soup.find("div", {"class": "menu__details"})
-    category = menudiv.find_all("div",{"class": "station-header-title"})
-    #print(category)
+def scrape_menu_to_str(url,name):
+    entire_body = BeautifulSoup(urllib.request.urlopen(url).read(), 'html.parser')
+    stations = entire_body.find_all("div",{"class": "menu__station"})
+    
+    complete_dict = dict()
+    complete_dict[name] = []#name is either brandywine or anteatery
+    for station_node in stations:
+        station_dict = dict()
+        station_dict['station'] = station_node.find("div", {"class": "station-header-title"}).string
+        station_dict['menu'] = []
+        categories = entire_body.find_all("div",{"class": "menu__parentCategory"})
+        for category_node in categories:
+            category_dict = dict()
+            category_dict["category"] = category_node.find("span",{"class":"categoryName"}).string
+            category_dict["items"] = []
+            items = category_node.find_all("li", {"class": "menu__item item"})
+            for item_node in items:
+                item_dict = dict()
+                menu_name = item_node.find("a", {"class": "viewItem"})
+                calories = item_node.find("span", {"class": "item__calories"})
+                description = item_node.find("p", {"class": "item__content"})
+                vegan = item_node['isvegan']
+                vegetarian = item_node['isvegetarian']
+                eatwell = item_node.find("ul", {"class": "unstyled item__allergens allergenList"})
 
-    k = dict()
-    k['restaurant'] = []
-    for x in range(len(category)):
-        n = dict()
-        n['category'] = category[x].string
-        n['menu'] = []
+                item_dict["name"] = menu_name.string if menu_name else item_node.find("span", {"class": "item__name"}).string
 
-        menu_cat = soup.find_all("div", {"class": "menu__station"})
-        cat_list = menu_cat[x].find_all("li", {"class": "menu__item item"})
-        #menu_name = menu_cat[x].find_all("a", {"class": "viewItem"})
-        # print(menu_name)
-        #calories = menu_cat[x].find_all("span", {"class": "item__calories"})
-        # print(calories)
-        #des = menu_cat[x].find_all("p", {"class": "item__content"})
+                item_dict["calories"] = int(calories.string.split()[0]) if calories else 0
 
-        for y in range(len(cat_list)):
-            z = dict()
-            menu_name = cat_list[y].find("a", {"class": "viewItem"})
-            calories = cat_list[y].find("span", {"class": "item__calories"})
-            des = cat_list[y].find("p", {"class": "item__content"})
-            vegan = cat_list[y]['isvegan']
-            vegetarian = cat_list[y]['isvegetarian']
-            eatwell = cat_list[y].find("ul", {"class": "unstyled item__allergens allergenList"})
-            #print(eatwell)
+                item_dict["description"] = description.string or 'N/A' if description else 'N/A'
 
-            if menu_name != None:
-                z["name"] = menu_name.string
-            else:
-                z["name"] = cat_list[y].find("span", {"class": "item__name"}).string
+                item_dict["isVegan"] = bool(vegan)
 
-            if calories != None:
-                z["calories"] = int(calories.string.split()[0])
-            else:
-                z["calories"] = 0
+                item_dict["isVegetarian"] = bool(vegetarian)
 
-            if des != None:
-                z["description"] = des.string
-            elif des == None:
-                z["description"] = 'N/A'
+                item_dict["isEatWell"] = False
+                if eatwell!= None:
+                    for x in eatwell.find_all("img"):
+                        #print(x)
+                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
+                            item_dict["isEatWell"] = True
 
-            z["isVegan"] = vegan
+                item_dict["isPlantForward"] = False
+                if eatwell!= None:
+                    for x in eatwell.find_all("img"):
+                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/PlantForward.png":
+                            item_dict["isPlantForward"] = True
 
-            z["isVegetarian"] = vegetarian
-
-            z["isEatWell"] = False
-            if eatwell!= None:
-                for x in eatwell.find_all("img"):
-                    #print(x)
-                    if x["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
-                        z["isEatWell"] = True
-
-            z["isPlantForward"] = False
-            if eatwell!= None:
-                for x in eatwell.find_all("img"):
-                    if x["src"] == "/-/media/Global/All Divisions/Dietary Information/PlantForward.png":
-                        z["isPlantForward"] = True
-
-            z["isWholeGrains"] = False
-            if eatwell != None:
-                for x in eatwell.find_all("img"):
-                    if x["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
-                        z["isWholeGrains"] = True
+                item_dict["isWholeGrains"] = False
+                if eatwell != None:
+                    for x in eatwell.find_all("img"):
+                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
+                            item_dict["isWholeGrains"] = True
 
 
-            n['menu'].append(z)
+                category_dict["items"].append(item_dict)
+            station_dict["menu"].append(category_dict)
 
-        k['restaurant'].append(n)
-    return json.dumps(k)
+        complete_dict[name].append(station_dict)
+    return json.dumps(complete_dict)
 
 eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
 brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
