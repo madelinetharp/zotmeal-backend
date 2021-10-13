@@ -78,10 +78,11 @@ def scrape_menu_to_str(url):
         k['restaurant'].append(n)
     return json.dumps(k)
 
+eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
+brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
-        brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
         data = ""
         if "anteatery" in self.path:
             data = scrape_menu_to_str(eatery_url)
