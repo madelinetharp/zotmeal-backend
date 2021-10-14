@@ -3,13 +3,26 @@ from bs4 import BeautifulSoup#imported to parse site contents into dicts
 import json#imported to format dict as json string
 import urllib.parse, urllib.request #imported to get site contents from internet
 import time#imported to get timestamp
+import traceback#for error handling
 
-def scrape_menu_to_str(url,name):
-    entire_body = BeautifulSoup(urllib.request.urlopen(url).read(), 'html.parser')
+url_dict = {
+    "brandywine":("https://uci.campusdish.com/LocationsAndMenus/Brandywine",3314),
+    "anteatery":("https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery",3056)
+}
+
+def scrape_menu_to_str(location: str, meal: int = None, date: str = None):
+    url, id = url_dict[location]
+    if meal==None:
+        query=""
+    else:
+        if date==None:
+            date = urllib.parse.quote(time.strftime("%m/%d/%Y"))#urllib quote URL-encodes the slashes
+        query = f"?locationId={id}&storeIds=&mode=Daily&periodId={105+meal}&date={date}"
+    entire_body = BeautifulSoup(urllib.request.urlopen(url+query).read(), 'html.parser')
     stations = entire_body.find_all("div",{"class": "menu__station"})
     
     complete_dict = dict()
-    complete_dict[name] = []#name is either brandywine or anteatery
+    complete_dict[location] = []#name is either brandywine or anteatery
     complete_dict["refreshTime"] = int(time.time())#unix epoch time
     for station_node in stations:
         station_dict = dict()
@@ -60,16 +73,15 @@ def scrape_menu_to_str(url,name):
                             item_dict["isWholeGrains"] = True
                 category_dict["items"].append(item_dict)
             station_dict["menu"].append(category_dict)
-        complete_dict[name].append(station_dict)
+        complete_dict[location].append(station_dict)
     return json.dumps(complete_dict,ensure_ascii=False)
 
-eatery_url = "https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery"
-brandy_url = "https://uci.campusdish.com/LocationsAndMenus/Brandywine"
+#brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
+#anteatery examples:
 #example url with query (10/14/2021 lunch): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 #example 2 (10/14/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F14%2F2021
 # (10/15/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F15%2F2021
 # (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
-url_dict = {"brandywine":brandy_url, "anteatery":eatery_url}
 
 class InvalidQueryException(Exception):
     pass
@@ -87,19 +99,27 @@ class handler(BaseHTTPRequestHandler):
             query_params = urllib.parse.parse_qs(query)
 
             try:
-                if not "location" in query_params.keys():
+                query_keys = query_params.keys()
+                if not "location" in query_keys:
                     raise InvalidQueryException
                 location = query_params["location"][0]
-                if not location in url_dict.keys():
+                if not location in url_dict.keys():#url_dict is in global scope
                     raise InvalidQueryException
-                data = scrape_menu_to_str(url_dict[location],location)
+                meal=None
+                date=None
+                if "meal" in query_keys:
+                    meal = int(query_params["meal"][0])
+                    if "date" in query_keys:
+                        date = query_params["date"][0]
+                data = scrape_menu_to_str(location, meal, date)
+                
             except InvalidQueryException:
                 self.send_response(400)
                 self.send_header('Content-type','text/plain')
                 self.end_headers()
                 self.wfile.write('''Invalid query parameters.
-                                \nNeeds to contain location=anteatery or location=brandywine.
-                                \nFor example, https://whatever-url.com/?location=anteatery'''.encode())
+                                Needs to contain location=anteatery or location=brandywine.
+                                For example, https://whatever-url.com/?location=anteatery'''.encode())
                 return
             
             self.send_response(200)
@@ -111,8 +131,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type','text/plain')
             self.end_headers()
             self.wfile.write("Invalid path. The only one available is /api".encode())
-            return
-        except:
+        except Exception as e:
+            traceback.print_exc()
             self.send_response(500)
             self.send_header('Content-type','text/plain')
             self.end_headers()
