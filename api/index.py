@@ -31,7 +31,7 @@ if USE_CACHE:
 def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
     seconds_since_epoch = int(time.time())#epoch is at 0:00 UTC
     hours_since_epoch = seconds_since_epoch/3600
-    uci_hour = (hours_since_epoch-7)%24#uci time is UTC-7
+    uci_hour = (hours_since_epoch-7+24)%24#uci time is UTC-7, and the +24 is to avoid negative numbers
     uci_minute = (uci_hour%1)*60
     return (int(uci_hour),int(uci_minute))
 
