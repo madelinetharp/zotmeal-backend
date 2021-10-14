@@ -25,9 +25,9 @@ if USE_CACHE:
         if meal == None:
             meal = get_current_meal()
         if date == None:
-            date = urllib.parse.quote(time.strftime("%m/%d/%Y"))
-        print(date)
-        return db.reference(f"{location}/{date}/{meal}")
+            date = time.strftime("%m/%d/%Y")
+        modified_datestring = date.replace("/","|")
+        return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
 def get_current_meal():
@@ -51,8 +51,8 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
         query=""
     else:
         if date==None:
-            date = urllib.parse.quote(time.strftime("%m/%d/%Y"))#urllib quote URL-encodes the slashes
-        query = f"?locationId={id}&storeIds=&mode=Daily&periodId={105+meal}&date={date}"
+            date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
+        query = f"?locationId={id}&storeIds=&mode=Daily&periodId={105+meal}&date={urllib.parse.quote(date)}"
     entire_body = BeautifulSoup(urllib.request.urlopen(url+query).read(), 'html.parser')
     stations = entire_body.find_all("div",{"class": "menu__station"})
     
@@ -145,8 +145,7 @@ class handler(BaseHTTPRequestHandler):
                 if "meal" in query_keys:
                     meal = int(query_params["meal"][0])
                     if "date" in query_keys:
-                        date = query_params["date"][0]#note: data is URL-encoded still, and should be kept that way for the whole program.
-                #Database stuff and web scraping happens here
+                        date = query_params["date"][0]#note: data gets decoded by urllib, so it will contain slashes.
                 if USE_CACHE:
                     print(f"date from query params: {date}")
                     db_ref = get_db_reference(location, meal, date)
