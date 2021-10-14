@@ -6,8 +6,8 @@ import time#imported to get timestamp
 import traceback#for error handling
 import os
 
-os.environ['TZ'] = 'America/Los_Angeles'#set clock to UCI time
-
+os.environ['TZ'] = 'US/Pacific'#set clock to UCI time
+print(time.strftime("Current hour on server: %H"))
 USE_CACHE = True
 
 if USE_CACHE:
