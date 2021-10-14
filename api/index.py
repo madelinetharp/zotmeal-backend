@@ -6,8 +6,6 @@ import time#imported to get timestamp
 import traceback#for error handling
 import os
 
-os.environ['TZ'] = 'US/Pacific'#set clock to UCI time
-print(time.strftime("Current hour on server: %H"))
 USE_CACHE = True
 
 if USE_CACHE:
@@ -30,9 +28,15 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
+def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
+    seconds_since_epoch = int(time.time())#epoch is at 0:00 UTC
+    hours_since_epoch = seconds_since_epoch/3600
+    uci_hour = (hours_since_epoch-7)%24#uci time is UTC-7
+    uci_minute = (uci_hour%1)*60
+    return (int(uci_hour),int(uci_minute))
+
 def get_current_meal():
-    hour = int(time.strftime("%H"))
-    minute = int(time.strftime("%M"))
+    hour, minute = get_irvine_time()
     if hour<11:
         return 0
     elif hour<17 or hour==16 and minute<30:
