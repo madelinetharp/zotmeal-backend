@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
 from bs4 import BeautifulSoup#imported to parse site contents into dicts
 import json#imported to format dict as json string
 import urllib.request #imported to get site contents from internet
+import time#imported to get timestamp
 
 def scrape_menu_to_str(url,name):
     entire_body = BeautifulSoup(urllib.request.urlopen(url).read(), 'html.parser')
@@ -9,6 +10,7 @@ def scrape_menu_to_str(url,name):
     
     complete_dict = dict()
     complete_dict[name] = []#name is either brandywine or anteatery
+    complete_dict["refreshTime"] = int(time.time())#unix epoch time
     for station_node in stations:
         station_dict = dict()
         station_dict['station'] = station_node.find("div", {"class": "station-header-title"}).string
