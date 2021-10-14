@@ -4,13 +4,48 @@ import json#imported to format dict as json string
 import urllib.parse, urllib.request #imported to get site contents from internet
 import time#imported to get timestamp
 import traceback#for error handling
+import os
+
+os.environ['TZ'] = 'America/Los_Angeles'#set clock to UCI time
+
+USE_CACHE = True
+
+if USE_CACHE:
+    #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
+    import firebase_admin#https://firebase.google.com/docs/database/admin/start
+    from firebase_admin import credentials
+    from firebase_admin import db
+    cred = credentials.Certificate(json.loads(os.getenv("FIREBASE_ADMIN_CREDENTIALS")))
+
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
+    })
+
+    def get_db_reference(location: str, meal: int, date: str) -> firebase_admin.db.Reference:
+        if meal == None:
+            meal = get_current_meal()
+        if date == None:
+            date = urllib.parse.quote(time.strftime("%m/%d/%Y"))
+        print(date)
+        return db.reference(f"{location}/{date}/{meal}")
+        #for the returned reference, get() returns None when there's nothing created at that path.
+
+def get_current_meal():
+    hour = int(time.strftime("%H"))
+    minute = int(time.strftime("%M"))
+    if hour<11:
+        return 0
+    elif hour<17 or hour==16 and minute<30:
+        return 1
+    else:
+        return 2
 
 url_dict = {
     "brandywine":("https://uci.campusdish.com/LocationsAndMenus/Brandywine",3314),
     "anteatery":("https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery",3056)
 }
 
-def scrape_menu_to_str(location: str, meal: int = None, date: str = None):
+def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> dict:
     url, id = url_dict[location]
     if meal==None:
         query=""
@@ -56,7 +91,6 @@ def scrape_menu_to_str(location: str, meal: int = None, date: str = None):
                 item_dict["isEatWell"] = False
                 if eatwell!= None:
                     for x in eatwell.find_all("img"):
-                        #print(x)
                         if x["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
                             item_dict["isEatWell"] = True
 
@@ -74,7 +108,7 @@ def scrape_menu_to_str(location: str, meal: int = None, date: str = None):
                 category_dict["items"].append(item_dict)
             station_dict["menu"].append(category_dict)
         complete_dict[location].append(station_dict)
-    return json.dumps(complete_dict,ensure_ascii=False)
+    return complete_dict
 
 #brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 #anteatery examples:
@@ -88,11 +122,12 @@ class InvalidQueryException(Exception):
 class NotFoundException(Exception):
     pass
 
-
+#to implement redirects see this: https://stackoverflow.com/questions/22701544/redirect-function-with-basehttprequesthandler
+#redirects could be useful to just send the request straight to firebase
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
-            scheme, netloc, path, params, query, fragment = urllib.parse.urlparse("//"+self.path)
+            scheme, netloc, path, params, query, fragment = urllib.parse.urlparse("//"+self.path)#prepending the // separates netloc and path
             if not path == "/api" or path == "/api/":
                 raise NotFoundException
 
@@ -110,8 +145,19 @@ class handler(BaseHTTPRequestHandler):
                 if "meal" in query_keys:
                     meal = int(query_params["meal"][0])
                     if "date" in query_keys:
-                        date = query_params["date"][0]
-                data = scrape_menu_to_str(location, meal, date)
+                        date = query_params["date"][0]#note: data is URL-encoded still, and should be kept that way for the whole program.
+                #Database stuff and web scraping happens here
+                if USE_CACHE:
+                    print(f"date from query params: {date}")
+                    db_ref = get_db_reference(location, meal, date)
+                    db_data = db_ref.get()
+                    if(db_data==None):
+                        data = scrape_menu_to_dict(location, meal, date)
+                        db_ref.set(data)
+                    else:
+                        data = db_data
+                else:
+                    data = scrape_menu_to_dict(location, meal, date)
                 
             except InvalidQueryException:
                 self.send_response(400)
@@ -125,7 +171,8 @@ class handler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type','application/json')
             self.end_headers()
-            self.wfile.write(data.encode())
+            #json.dump(data,self.wfile,ensure_ascii=False) #TODO: this clean solution doesn't work for some reason. says bytes-like is required, not str. figure out why
+            self.wfile.write(json.dumps(data,ensure_ascii=False).encode())
         except NotFoundException:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
