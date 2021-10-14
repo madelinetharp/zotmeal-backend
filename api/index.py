@@ -51,6 +51,7 @@ url_dict = {
 
 def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> dict:
     url, id = url_dict[location]
+    
     if meal==None:
         query=""
     else:
@@ -80,7 +81,7 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
                 description = item_node.find("p", {"class": "item__content"})
                 vegan = item_node['isvegan']
                 vegetarian = item_node['isvegetarian']
-                eatwell = item_node.find("ul", {"class": "unstyled item__allergens allergenList"})
+                img_container = item_node.find("ul", {"class": "unstyled item__allergens allergenList"})
 
                 item_dict["name"] = menu_name.string if menu_name else item_node.find("span", {"class": "item__name"}).string
 
@@ -93,22 +94,18 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
                 item_dict["isVegetarian"] = vegetarian=="True"
 
                 item_dict["isEatWell"] = False
-                if eatwell!= None:
-                    for x in eatwell.find_all("img"):
-                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
-                            item_dict["isEatWell"] = True
-
                 item_dict["isPlantForward"] = False
-                if eatwell!= None:
-                    for x in eatwell.find_all("img"):
-                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/PlantForward.png":
-                            item_dict["isPlantForward"] = True
-
                 item_dict["isWholeGrains"] = False
-                if eatwell != None:
-                    for x in eatwell.find_all("img"):
-                        if x["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
+                
+                if img_container!= None:
+                    for img_node in img_container.find_all("img"):
+                        if img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
+                            item_dict["isEatWell"] = True
+                        elif img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/PlantForward.png":
+                            item_dict["isPlantForward"] = True
+                        elif img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
                             item_dict["isWholeGrains"] = True
+
                 category_dict["items"].append(item_dict)
             station_dict["menu"].append(category_dict)
         complete_dict[location].append(station_dict)
