@@ -6,7 +6,7 @@ import time#imported to get timestamp
 import traceback#for error handling
 import os
 
-USE_CACHE = True
+USE_CACHE = bool(os.getenv("USE_CACHE"))
 
 if USE_CACHE:
     #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
@@ -88,9 +88,9 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
 
                 item_dict["description"] = description.string or 'N/A' if description else 'N/A'
 
-                item_dict["isVegan"] = bool(vegan)
+                item_dict["isVegan"] = vegan=="True"
 
-                item_dict["isVegetarian"] = bool(vegetarian)
+                item_dict["isVegetarian"] = vegetarian=="True"
 
                 item_dict["isEatWell"] = False
                 if eatwell!= None:
