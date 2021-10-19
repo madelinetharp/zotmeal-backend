@@ -43,15 +43,20 @@ def get_current_meal():
         return 1
     else:
         return 2
+brandy_info = ("Brandywine","https://uci.campusdish.com/LocationsAndMenus/Brandywine",3314)
+eatery_info = ("Anteatery","https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery",3056)
 
 url_dict = {
-    "brandywine":("https://uci.campusdish.com/LocationsAndMenus/Brandywine",3314),
-    "anteatery":("https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery",3056)
+    "Brandywine":brandy_info,
+    "brandywine":brandy_info,
+    "TheAnteatery":eatery_info,
+    "Anteatery":eatery_info,
+    "anteatery":eatery_info
 }
 
 def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> dict:
-    url, id = url_dict[location]
-    
+    restaurant, url, id = url_dict[location]
+
     if meal==None:
         query=""
     else:
@@ -62,8 +67,9 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
     stations = entire_body.find_all("div",{"class": "menu__station"})
     
     complete_dict = dict()
-    complete_dict[location] = []#name is either brandywine or anteatery
     complete_dict["refreshTime"] = int(time.time())#unix epoch time
+    complete_dict["restaurant"] = restaurant#restaurant name is either brandywine or anteatery
+    complete_dict["all"] = []#contains list of all stations
     for station_node in stations:
         station_dict = dict()
         station_dict['station'] = station_node.find("div", {"class": "station-header-title"}).string
@@ -108,7 +114,7 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
 
                 category_dict["items"].append(item_dict)
             station_dict["menu"].append(category_dict)
-        complete_dict[location].append(station_dict)
+        complete_dict["all"].append(station_dict)
     return complete_dict
 
 #brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
@@ -137,16 +143,18 @@ class handler(BaseHTTPRequestHandler):
             try:
                 query_keys = query_params.keys()
                 if not "location" in query_keys:
-                    raise InvalidQueryException
+                    raise InvalidQueryException("No location query parameter specified")
                 location = query_params["location"][0]
                 if not location in url_dict.keys():#url_dict is in global scope
-                    raise InvalidQueryException
+                    raise InvalidQueryException(f"The location specified is not valid. Valid locations: {list(url_dict.keys())}")
                 meal=None
                 date=None
                 if "meal" in query_keys:
                     meal = int(query_params["meal"][0])
                     if "date" in query_keys:
                         date = query_params["date"][0]#note: data gets decoded by urllib, so it will contain slashes.
+                elif "date" in query_keys:
+                    raise InvalidQueryException("You can't provide the date without the meal (not implemented in the server). LMK if you think there is a use for providing only the date.")
                 if USE_CACHE:
                     print(f"date from query params: {date}")
                     db_ref = get_db_reference(location, meal, date)
@@ -159,13 +167,11 @@ class handler(BaseHTTPRequestHandler):
                 else:
                     data = scrape_menu_to_dict(location, meal, date)
                 
-            except InvalidQueryException:
+            except InvalidQueryException as e:
                 self.send_response(400)
                 self.send_header('Content-type','text/plain')
                 self.end_headers()
-                self.wfile.write('''Invalid query parameters.
-                                Needs to contain location=anteatery or location=brandywine.
-                                For example, https://whatever-url.com/?location=anteatery'''.encode())
+                self.wfile.write(f"Invalid query parameters. Details: {e}".encode())
                 return
             
             self.send_response(200)
