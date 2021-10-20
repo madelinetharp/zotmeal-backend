@@ -89,7 +89,7 @@ def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> di
                 vegetarian = item_node['isvegetarian']
                 img_container = item_node.find("ul", {"class": "unstyled item__allergens allergenList"})
 
-                item_dict["name"] = menu_name.string if menu_name else item_node.find("span", {"class": "item__name"}).string
+                item_dict["name"] = (menu_name.string if menu_name else item_node.find("span", {"class": "item__name"}).string).strip()
 
                 item_dict["calories"] = int(calories.string.split()[0]) if calories else 0
 
