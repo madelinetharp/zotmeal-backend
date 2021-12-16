@@ -1,11 +1,13 @@
 from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
-from bs4 import BeautifulSoup#imported to parse site contents into dicts
 import json#imported to format dict as json string
 import urllib.parse, urllib.request #imported to get site contents from internet
 import time#imported to get timestamp
 import traceback#for error handling
 import os
-
+from datetime import datetime
+from collections import defaultdict
+#anteatery 01/14/2022 breakfast
+#https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 print("Using cache" if USE_CACHE else "Not using cache")
 if USE_CACHE:
@@ -37,14 +39,18 @@ def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
 
 def get_current_meal():
     hour, minute = get_irvine_time()
-    if hour<11:
+    if hour<11:#if it's before 11 am
         return 0
-    elif hour<17 or hour==16 and minute<30:
-        return 1
+    elif hour<17 or hour==16 and minute<30:#if it's before 4:30 pm
+        if datetime.today().weekday() > 5:#if it's a weekend, return 3, which corresponds to brunch
+            return 3
+        else:
+            return 1
     else:
         return 2
-brandy_info = ("Brandywine","https://uci.campusdish.com/LocationsAndMenus/Brandywine",3314)
-eatery_info = ("Anteatery","https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery",3056)
+
+brandy_info = ("Brandywine","https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
+eatery_info = ("Anteatery","https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
 
 url_dict = {
     "Brandywine":brandy_info,
@@ -53,69 +59,65 @@ url_dict = {
     "Anteatery":eatery_info,
     "anteatery":eatery_info
 }
+#brunch = 2651
+meal_ids = {
+    0: 49,
+    1: 106,
+    2: 107,
+    3: 2651
+}
 
-def scrape_menu_to_dict(location: str, meal: int = None, date: str = None) -> dict:
-    restaurant, url, id = url_dict[location]
+def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
+    restaurant, url = url_dict[location]
 
-    if meal==None:
-        query=""
-    else:
-        if date==None:
-            date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
-        query = f"?locationId={id}&storeIds=&mode=Daily&periodId={105+meal}&date={urllib.parse.quote(date)}"
-    entire_body = BeautifulSoup(urllib.request.urlopen(url+query).read(), 'html.parser')
-    stations = entire_body.find_all("div",{"class": "menu__station"})
+    if meal_id==None:
+        meal_id = get_current_meal()
+    if date==None:
+        date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
+    url += f"&periodId={meal_ids[meal_id]}&date={date}"
+    r = urllib.request.urlopen(url)
+    data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
+    menu_data = data["Menu"]
     
-    complete_dict = dict()
-    complete_dict["refreshTime"] = int(time.time())#unix epoch time
-    complete_dict["restaurant"] = restaurant#restaurant name is either brandywine or anteatery
-    complete_dict["all"] = []#contains list of all stations
-    for station_node in stations:
-        station_dict = dict()
-        station_dict['station'] = station_node.find("div", {"class": "station-header-title"}).string
-        station_dict['menu'] = []
-        categories = station_node.find_all("div",{"class": "menu__parentCategory"})
-        for category_node in categories:
-            category_dict = dict()
-            category_dict["category"] = category_node.find("span",{"class":"categoryName"}).string
-            category_dict["items"] = []
-            items = category_node.find_all("li", {"class": "menu__item item"})
-            for item_node in items:
-                item_dict = dict()
-                menu_name = item_node.find("a", {"class": "viewItem"})
-                calories = item_node.find("span", {"class": "item__calories"})
-                description = item_node.find("p", {"class": "item__content"})
-                vegan = item_node['isvegan']
-                vegetarian = item_node['isvegetarian']
-                img_container = item_node.find("ul", {"class": "unstyled item__allergens allergenList"})
+    final_dict = dict()
+    final_dict["refreshTime"] = int(time.time())#unix epoch time
+    final_dict["restaurant"] = restaurant#restaurant name is either brandywine or anteatery
+    final_dict["all"] = []#contains list of all stations
 
-                item_dict["name"] = (menu_name.string if menu_name else item_node.find("span", {"class": "item__name"}).string).strip()
+    intermediate_dict = defaultdict(lambda: defaultdict(lambda: []))
 
-                item_dict["calories"] = int(calories.string.split()[0]) if calories else 0
+    stations_list = menu_data["MenuStations"]
+    station_id_to_name = dict()
+    for entry in stations_list:
+        station_id_to_name[entry["StationId"]] = entry["Name"]
+    products_list = menu_data["MenuProducts"]
+    for entry in products_list:
+        details = entry["Product"]
+        station_name = station_id_to_name[entry["StationId"]]
+        category_name = details["Categories"][0]["DisplayName"]
+        item_dict = dict()
+        item_dict["name"]  = details["MarketingName"]
+        item_dict["calories"] = int(details["Calories"]) if details["Calories"] else None
+        item_dict["description"] = details["ShortDescription"]
 
-                item_dict["description"] = description.string or 'N/A' if description else 'N/A'
+        item_dict["isVegan"] = details["IsVegan"]
+        item_dict["isVegetarian"] = details["IsVegetarian"]
 
-                item_dict["isVegan"] = vegan=="True"
+        item_dict["isEatWell"] = False
+        item_dict["isPlantForward"] = False
+        item_dict["isWholeGrains"] = False
 
-                item_dict["isVegetarian"] = vegetarian=="True"
-
-                item_dict["isEatWell"] = False
-                item_dict["isPlantForward"] = False
-                item_dict["isWholeGrains"] = False
-                
-                if img_container!= None:
-                    for img_node in img_container.find_all("img"):
-                        if img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/EatWell-80x80.png":
-                            item_dict["isEatWell"] = True
-                        elif img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/PlantForward.png":
-                            item_dict["isPlantForward"] = True
-                        elif img_node["src"] == "/-/media/Global/All Divisions/Dietary Information/WholeGrains-80x80.png":
-                            item_dict["isWholeGrains"] = True
-
-                category_dict["items"].append(item_dict)
-            station_dict["menu"].append(category_dict)
-        complete_dict["all"].append(station_dict)
-    return complete_dict
+        for entry_2 in details["DietaryInformation"]:
+            for property in ("EatWell", "PlantForward", "WholeGrains"):
+                if property in entry_2["IconUrl"]:
+                    item_dict[f"is{property}"] = True
+        intermediate_dict[station_name][category_name].append(item_dict)
+    for station_name in intermediate_dict.keys():
+        station_dict = {"station":station_name,"menu":[]}
+        for category, items in intermediate_dict[station_name].items():
+            station_dict["menu"].append({"category":category,"items":items})
+        final_dict["all"].append(station_dict)
+    return final_dict
 
 #brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 #anteatery examples:
