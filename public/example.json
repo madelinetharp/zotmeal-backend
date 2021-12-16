@@ -1,0 +1,536 @@
+{
+    "refreshTime": 1639520191,
+    "restaurant": "Brandywine",
+    "all": [
+        {
+            "station": "The Farm Stand/ Salad Bar",
+            "menu": [
+                {
+                    "category": "Condiments",
+                    "items": [
+                        {
+                            "name": "Balsamic Vinaigrette",
+                            "calories": 60,
+                            "description": "Tangy balsamic vinaigrette dressing",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Creamy Caesar Dressing",
+                            "calories": 140,
+                            "description": "Creamy Caesar dressing",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Lite Italian Dressing",
+                            "calories": 40,
+                            "description": "Lite Italian salad dressing",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Ranch Dressing",
+                            "calories": 100,
+                            "description": "Homestyle creamy ranch salad dressing",
+                            "isVegan": false,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Grains",
+                    "items": [
+                        {
+                            "name": "Croutons",
+                            "calories": 60,
+                            "description": "Homestyle seasoned croutons",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Protein",
+                    "items": [
+                        {
+                            "name": "Shredded Cheddar Cheese",
+                            "calories": 110,
+                            "description": "Shredded Cheddar cheese",
+                            "isVegan": false,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Sunflower Seeds",
+                            "calories": 100,
+                            "description": "Sunflower seeds",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Salads",
+                    "items": [
+                        {
+                            "name": "Black Olives",
+                            "calories": 60,
+                            "description": "Sliced pitted black olives",
+                            "isVegan": false,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Broccoli Florets",
+                            "calories": 15,
+                            "description": "Fresh broccoli florets",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Cantaloupe",
+                            "calories": 25,
+                            "description": "Cubed fresh cantaloupe",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Cucumbers",
+                            "calories": 10,
+                            "description": "Sliced fresh cucumbers",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Garbanzo Beans",
+                            "calories": 60,
+                            "description": "Garbanzo beans",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Grape Tomatoes",
+                            "calories": 15,
+                            "description": "Fresh grape tomatoes",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Honeydew Melon",
+                            "calories": 25,
+                            "description": "Cubed honeydew melon",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Pineapple Slices",
+                            "calories": null,
+                            "description": "Sliced fresh pineapple",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Red Grapes",
+                            "calories": 30,
+                            "description": "Fresh red seedless grapes",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Romaine Lettuce",
+                            "calories": 5,
+                            "description": "Chopped romaine lettuce",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Shredded Carrots",
+                            "calories": 15,
+                            "description": "Shredded fresh carrots",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Sliced Mixed Bell Peppers",
+                            "calories": 15,
+                            "description": "Sliced green and red bell peppers",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Sliced Red Onions",
+                            "calories": 10,
+                            "description": "Thinly sliced red onions",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Spring Salad Mix",
+                            "calories": 0,
+                            "description": "Fresh spring lettuce mix",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Grubb/ Mainline",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Fish and Chips",
+                            "calories": 370,
+                            "description": "Fish sticks and Old Bay seasoned potato chips",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Five Spice Veggie Quinoa Bowl",
+                            "calories": 240,
+                            "description": "Sweet potatoes, peas, carrots and kale seasoned with Five Spice and soy sauce served over Quinoa",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": true
+                        }
+                    ]
+                },
+                {
+                    "category": "Sauces",
+                    "items": [
+                        {
+                            "name": "Tartar Sauce",
+                            "calories": 310,
+                            "description": "Creamy mayonnaise with sweet pickle relish, onion, parsley, lemon, Worcestershire and hot sauce",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Sides",
+                    "items": [
+                        {
+                            "name": "Seasoned Peas and Carrots",
+                            "calories": 40,
+                            "description": "Steamed peas and carrots seasoned with salt",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Compass",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Gluten Free Penne",
+                            "calories": 100,
+                            "description": "Fresh cooked al dente gluten-free tube pasta",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Sides",
+                    "items": [
+                        {
+                            "name": "Garlic Roasted Broccoli",
+                            "calories": 50,
+                            "description": "Oven-roasted broccoli and garlic",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Vegan",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Spicy Tofu Vegetable Stir-Fry",
+                            "calories": 130,
+                            "description": "Tofu sauteed with red and green peppers, red onion and chili garlic sauce",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Sides",
+                    "items": [
+                        {
+                            "name": "Roasted Garlic Potatoes",
+                            "calories": 100,
+                            "description": "Oven-roasted red potatoes tossed with roasted garlic",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Crossroads",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Sweet & Sour Meatballs",
+                            "calories": 190,
+                            "description": "Beef meatballs sauteed with pineapple, bell peppers, onion and sweet & sour sauce",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                },
+                {
+                    "category": "Sides",
+                    "items": [
+                        {
+                            "name": "Brown Rice",
+                            "calories": 110,
+                            "description": "Tender cooked brown rice",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": false,
+                            "isWholeGrains": true
+                        },
+                        {
+                            "name": "Roasted Brussels Sprouts",
+                            "calories": 35,
+                            "description": "Fresh brussels sprouts baked with olive oil and salt",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Stir-Fry Vegetables",
+                            "calories": 45,
+                            "description": "Snow peas, mushrooms, red pepper, carrot and scallion, seasoned with ginger and garlic",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "White Rice",
+                            "calories": 120,
+                            "description": "Slow-simmered long grain white rice",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "The Farm Stand/ Deli",
+            "menu": [
+                {
+                    "category": "Hot Sandwiches ",
+                    "items": [
+                        {
+                            "name": "Eggplant Parm Panini",
+                            "calories": 670,
+                            "description": "Soft Italian bread stuffed with diced grilled eggplant, thick slices of mozzarella and sun-dried tomato spread",
+                            "isVegan": false,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": true,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Nashville Chicken Panini",
+                            "calories": 300,
+                            "description": "Spicy chicken, pepper jack cheese, lettuce and ranch dressing on Italian bread",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Hearth/Pizza",
+            "menu": [
+                {
+                    "category": "Pizza",
+                    "items": [
+                        {
+                            "name": "Classic Cheese Pizza",
+                            "calories": 340,
+                            "description": "Mozzarella cheese and pizza sauce on a golden brown crust",
+                            "isVegan": false,
+                            "isVegetarian": true,
+                            "isEatWell": true,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Cuban Stromboli",
+                            "calories": 310,
+                            "description": "Roast pork, salami, mozzarella and pepper relish wrapped in in a golden brown crust",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "Pepperoni Pizza",
+                            "calories": 370,
+                            "description": "Pepperoni, mozzarella and pizza sauce on a golden brown crust",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Soups",
+            "menu": [
+                {
+                    "category": "Soups",
+                    "items": [
+                        {
+                            "name": "Curried Cauliflower Soup",
+                            "calories": 110,
+                            "description": "Curry-spiced velvety smooth cauliflower soup",
+                            "isVegan": true,
+                            "isVegetarian": true,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        },
+                        {
+                            "name": "New England Clam Chowder",
+                            "calories": 210,
+                            "description": "A thick creamy soup of clams, potatoes, bacon, onions, celery and herbs",
+                            "isVegan": false,
+                            "isVegetarian": false,
+                            "isEatWell": false,
+                            "isPlantForward": false,
+                            "isWholeGrains": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
