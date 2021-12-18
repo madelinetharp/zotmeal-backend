@@ -31,26 +31,37 @@ if USE_CACHE:
         #for the returned reference, get() returns None when there's nothing created at that path.
 
 def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
-    seconds_since_epoch = int(time.time())#epoch is at 0:00 UTC
-    hours_since_epoch = seconds_since_epoch/3600
-    uci_hour = (hours_since_epoch-7+24)%24#uci time is UTC-7, and the +24 is to avoid negative numbers
-    uci_minute = (uci_hour%1)*60
-    return (int(uci_hour),int(uci_minute))
+    local_time = time.gmtime(time.time() - 28800)
+    return local_time.tm_hour, local_time.tm_min
 
 def get_current_meal():
-    hour, minute = get_irvine_time()
-    if hour<11:#if it's before 11 am
-        return 0
-    elif hour<17 or hour==16 and minute<30:#if it's before 4:30 pm
-        if datetime.today().weekday() > 5:#if it's a weekend, return 3, which corresponds to brunch
-            return 3
-        else:
-            return 1
-    else:
+    local_time = time.gmtime(time.time() - 28800)
+    now = int(f'{local_time.tm_hour}{local_time.tm_min}')
+    
+    breakfast   = 0000
+    lunch       = 1100
+    dinner      = 1630
+    
+    # After 16:30, Dinner, Meal-Code: 2
+    if now >= dinner:
         return 2
+
+    # After 11:00 Weekend, Brunch, Meal-Code: 3
+    if now >= lunch and local_time.tm_wday >= 5:
+        return 3
+
+    # After 11:00 Weekday, Lunch, Meal-Code: 1
+    if now >= lunch:
+        return 1
+
+    # After 00:00, Breakfast, Meal-Code: 0
+    if now >= breakfast:
+        return 0
 
 brandy_info = ("Brandywine","https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
 eatery_info = ("Anteatery","https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
+
+brandy_info = ('Brandywine', 'https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/19/2022')
 
 url_dict = {
     "Brandywine":brandy_info,
@@ -94,46 +105,54 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     for entry in stations_list:
         station_id_to_name[entry["StationId"]] = entry["Name"]
     products_list = menu_data["MenuProducts"]
+
+    PROPERTIES = [
+    "IsVegan",
+    "IsVegetarian",
+    "ServingSize",
+    "ServingUnit",
+    "Calories",
+    "CaloriesFromFat",
+    "TotalFat",
+    "TransFat",
+    "Cholesterol",
+    "Sodium",
+    "TotalCarbohydrates",
+    "DietaryFiber",
+    "Sugars",
+    "Protein",
+    "VitaminA",
+    "VitaminC",
+    "Calcium",
+    "Iron",
+    "SaturatedFat"]
+
+    def _find_icon(icon_property, food_info):
+        return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
+
     for entry in products_list:
         details = entry["Product"]
         station_name = station_id_to_name[entry["StationId"]].replace("/ "," / ")
         category_name = details["Categories"][0]["DisplayName"]
-        item_dict = dict()
-        item_dict["name"]  = details["MarketingName"]
-        item_dict["description"] = details["ShortDescription"]
 
-        nutrition_dict = dict()
-        for key in ["IsVegan",
-                    "IsVegetarian",
-                    "ServingSize",
-                    "ServingUnit",
-                    "Calories",
-                    "CaloriesFromFat",
-                    "TotalFat",
-                    "TransFat",
-                    "Cholesterol",
-                    "Sodium",
-                    "TotalCarbohydrates",
-                    "DietaryFiber",
-                    "Sugars",
-                    "Protein",
-                    "VitaminA",
-                    "VitaminC",
-                    "Calcium",
-                    "Iron",
-                    "SaturatedFat"]:
-            nutrition_dict[uncapitalize_first_letter(key)]=details[key]
-            
-        for property in ("EatWell", "PlantForward", "WholeGrains"):
-            nutrition_dict[f"is{property}"] = any(map(lambda entry: property in entry["IconUrl"], details["DietaryInformation"]))
-        
-        item_dict["nutrition"] = nutrition_dict
+        item_dict = {
+            'name'          : details['MarketingName'],
+            'description'   : details['ShortDescription'],
+            'EatWell'       : _find_icon('EatWell', details),
+            'PlantForward'  : _find_icon('PlantForward', details),
+            'WholeGrain'    : _find_icon('WholeGrain', details),
+            'nutrition'     : dict([(uncapitalize_first_letter(key), details[key]) for key in PROPERTIES]),
+        } 
+
         intermediate_dict[station_name][category_name].append(item_dict)
+    
     for station_name in intermediate_dict.keys():
-        station_dict = {"station":station_name,"menu":[]}
-        for category, items in intermediate_dict[station_name].items():
-            station_dict["menu"].append({"category":category,"items":items})
-        final_dict["all"].append(station_dict)
+
+        final_dict["all"].append({
+        'station'   : station_name, 
+        'menu'      : [{'category': category, 'items': items} for category, items in intermediate_dict[station_name].items()]
+        })
+
     return final_dict
 
 #brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
