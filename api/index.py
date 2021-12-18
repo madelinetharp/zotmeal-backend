@@ -67,6 +67,9 @@ meal_ids = {
     3: 2651
 }
 
+def uncapitalize_first_letter(s: str) -> str:
+    return s[0].lower()+s[1:]
+
 def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
     restaurant, url = url_dict[location]
 
@@ -97,15 +100,45 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
         category_name = details["Categories"][0]["DisplayName"]
         item_dict = dict()
         item_dict["name"]  = details["MarketingName"]
-        item_dict["calories"] = int(details["Calories"]) if details["Calories"] else None
         item_dict["description"] = details["ShortDescription"]
 
-        item_dict["isVegan"] = details["IsVegan"]
-        item_dict["isVegetarian"] = details["IsVegetarian"]
-
+        nutrition_dict = dict()
+        for key in ["IsVegan",
+                    "IsVegetarian",
+                    "ServingSize",
+                    "ServingUnit",
+                    "Calories",
+                    "CaloriesFromFat",
+                    "TotalFat",
+                    "TransFat",
+                    "Cholesterol",
+                    "Sodium",
+                    "TotalCarbohydrates",
+                    "DietaryFiber",
+                    "Sugars",
+                    "Protein",
+                    "VitaminA",
+                    "VitaminC",
+                    "Calcium",
+                    "Iron",
+                    "SaturatedFat"]:
+            try:
+                nutrition_dict[uncapitalize_first_letter(key)]=int(details[key])
+            except Exception as e:
+                if "int()" in str(e):
+                    try:
+                        nutrition_dict[uncapitalize_first_letter(key)]=float(details[key])
+                    except Exception as e2:
+                        if "float" in str(e2):
+                            nutrition_dict[uncapitalize_first_letter(key)]=details[key]
+                        else:
+                            raise e2
+                else:
+                    raise e
         for property in ("EatWell", "PlantForward", "WholeGrains"):
-            item_dict[f"is{property}"] = any(map(lambda entry: property in entry["IconUrl"], details["DietaryInformation"]))
+            nutrition_dict[f"is{property}"] = any(map(lambda entry: property in entry["IconUrl"], details["DietaryInformation"]))
         
+        item_dict["nutrition"] = nutrition_dict
         intermediate_dict[station_name][category_name].append(item_dict)
     for station_name in intermediate_dict.keys():
         station_dict = {"station":station_name,"menu":[]}
