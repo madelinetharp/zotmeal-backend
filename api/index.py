@@ -104,6 +104,9 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     station_id_to_name = dict()
     for entry in stations_list:
         station_id_to_name[entry["StationId"]] = entry["Name"]
+    
+    station_id_to_name = dict([(entry['StationId'], entry['Name']) for entry in stations_list])
+
     products_list = menu_data["MenuProducts"]
 
     PROPERTIES = [
