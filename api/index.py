@@ -96,7 +96,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     products_list = menu_data["MenuProducts"]
     for entry in products_list:
         details = entry["Product"]
-        station_name = station_id_to_name[entry["StationId"]]
+        station_name = station_id_to_name[entry["StationId"]].replace("/ "," / ")
         category_name = details["Categories"][0]["DisplayName"]
         item_dict = dict()
         item_dict["name"]  = details["MarketingName"]
