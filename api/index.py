@@ -8,8 +8,11 @@ from datetime import datetime
 from collections import defaultdict
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
+
 USE_CACHE = bool(os.getenv("USE_CACHE"))
+
 print("Using cache" if USE_CACHE else "Not using cache")
+
 if USE_CACHE:
     #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
     import firebase_admin#https://firebase.google.com/docs/database/admin/start
@@ -22,19 +25,23 @@ if USE_CACHE:
     })
 
     def get_db_reference(location: str, meal: int, date: str) -> firebase_admin.db.Reference:
-        if meal == None:
+        if meal is None:
             meal = get_current_meal()
-        if date == None:
+
+        if date is None:
             date = time.strftime("%m/%d/%Y")
+
         modified_datestring = date.replace("/","|")
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
 def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
+    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
     local_time = time.gmtime(time.time() - 28800)
     return local_time.tm_hour, local_time.tm_min
 
 def get_current_meal():
+    '''Return meal code for current time of the day'''
     local_time = time.gmtime(time.time() - 28800)
     now = int(f'{local_time.tm_hour}{local_time.tm_min}')
     
@@ -58,19 +65,17 @@ def get_current_meal():
     if now >= breakfast:
         return 0
 
-brandy_info = ("Brandywine","https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
-eatery_info = ("Anteatery","https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
-
-brandy_info = ('Brandywine', 'https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/19/2022')
+brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
+eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
 
 url_dict = {
-    "Brandywine":brandy_info,
-    "brandywine":brandy_info,
-    "TheAnteatery":eatery_info,
-    "Anteatery":eatery_info,
-    "anteatery":eatery_info
+    "Brandywine"    : brandy_info,
+    "brandywine"    : brandy_info,
+    "TheAnteatery"  : eatery_info,
+    "Anteatery"     : eatery_info,
+    "anteatery"     : eatery_info
 }
-#brunch = 2651
+
 meal_ids = {
     0: 49,
     1: 106,
@@ -82,29 +87,31 @@ def uncapitalize_first_letter(s: str) -> str:
     return s[0].lower()+s[1:]
 
 def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
+    '''Given a location of a cafeteria, get the corresponding JSON information and 
+    return a Python dictionary of the relevant components'''
+    
     restaurant, url = url_dict[location]
 
-    if meal_id==None:
+    if meal_id is None:
         meal_id = get_current_meal()
-    if date==None:
+
+    if date is None:
         date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
+
     url += f"&periodId={meal_ids[meal_id]}&date={date}"
     r = urllib.request.urlopen(url)
     data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
     menu_data = data["Menu"]
     
-    final_dict = dict()
-    final_dict["refreshTime"] = int(time.time())#unix epoch time
-    final_dict["restaurant"] = restaurant#restaurant name is either brandywine or anteatery
-    final_dict["all"] = []#contains list of all stations
+    final_dict = {
+        'refreshTime'   : int(time.time()),
+        'restaurant'    : restaurant,
+        'all'           : [],
+    }
 
     intermediate_dict = defaultdict(lambda: defaultdict(lambda: []))
 
     stations_list = menu_data["MenuStations"]
-    station_id_to_name = dict()
-    for entry in stations_list:
-        station_id_to_name[entry["StationId"]] = entry["Name"]
-    
     station_id_to_name = dict([(entry['StationId'], entry['Name']) for entry in stations_list])
 
     products_list = menu_data["MenuProducts"]
@@ -141,10 +148,12 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
         item_dict = {
             'name'          : details['MarketingName'],
             'description'   : details['ShortDescription'],
-            'EatWell'       : _find_icon('EatWell', details),
-            'PlantForward'  : _find_icon('PlantForward', details),
-            'WholeGrain'    : _find_icon('WholeGrain', details),
-            'nutrition'     : dict([(uncapitalize_first_letter(key), details[key]) for key in PROPERTIES]),
+            'nutrition'     : dict([(uncapitalize_first_letter(key), details[key]) for key in PROPERTIES]) | 
+                {
+                'isEatWell'       : _find_icon('EatWell', details),
+                'isPlantForward'  : _find_icon('PlantForward', details),
+                'isWholeGrain'    : _find_icon('WholeGrain', details),
+                },
         } 
 
         intermediate_dict[station_name][category_name].append(item_dict)
