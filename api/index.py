@@ -122,19 +122,8 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
                     "Calcium",
                     "Iron",
                     "SaturatedFat"]:
-            try:
-                nutrition_dict[uncapitalize_first_letter(key)]=int(details[key])
-            except Exception as e:
-                if "int()" in str(e):
-                    try:
-                        nutrition_dict[uncapitalize_first_letter(key)]=float(details[key])
-                    except Exception as e2:
-                        if "float" in str(e2):
-                            nutrition_dict[uncapitalize_first_letter(key)]=details[key]
-                        else:
-                            raise e2
-                else:
-                    raise e
+            nutrition_dict[uncapitalize_first_letter(key)]=details[key]
+            
         for property in ("EatWell", "PlantForward", "WholeGrains"):
             nutrition_dict[f"is{property}"] = any(map(lambda entry: property in entry["IconUrl"], details["DietaryInformation"]))
         
