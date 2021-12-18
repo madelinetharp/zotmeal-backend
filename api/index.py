@@ -103,14 +103,9 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
         item_dict["isVegan"] = details["IsVegan"]
         item_dict["isVegetarian"] = details["IsVegetarian"]
 
-        item_dict["isEatWell"] = False
-        item_dict["isPlantForward"] = False
-        item_dict["isWholeGrains"] = False
-
-        for entry_2 in details["DietaryInformation"]:
-            for property in ("EatWell", "PlantForward", "WholeGrains"):
-                if property in entry_2["IconUrl"]:
-                    item_dict[f"is{property}"] = True
+        for property in ("EatWell", "PlantForward", "WholeGrains"):
+            item_dict[f"is{property}"] = any(map(lambda entry: property in entry["IconUrl"], details["DietaryInformation"]))
+        
         intermediate_dict[station_name][category_name].append(item_dict)
     for station_name in intermediate_dict.keys():
         station_dict = {"station":station_name,"menu":[]}
