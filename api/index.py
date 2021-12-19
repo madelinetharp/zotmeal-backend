@@ -77,10 +77,10 @@ url_dict = {
 }
 
 meal_ids = {
-    0: 49,
-    1: 106,
-    2: 107,
-    3: 2651
+    0: 49,#breakfast
+    1: 106,#lunch
+    2: 107,#dinner
+    3: 2651#brunch (on weekends)
 }
 
 def uncapitalize_first_letter(s: str) -> str:
@@ -154,7 +154,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
                 'isPlantForward'  : _find_icon('PlantForward', details),
                 'isWholeGrain'    : _find_icon('WholeGrain', details),
                 },
-        } 
+        }
 
         intermediate_dict[station_name][category_name].append(item_dict)
     
@@ -205,6 +205,9 @@ class handler(BaseHTTPRequestHandler):
                         date = query_params["date"][0]#note: data gets decoded by urllib, so it will contain slashes.
                 elif "date" in query_keys:
                     raise InvalidQueryException("You can't provide the date without the meal (not implemented in the server). LMK if you think there is a use for providing only the date.")
+                weekday = datetime.strptime(date,"%m/%d/%Y").weekday()
+                if weekday > 4 and meal == 1:
+                    meal=3
                 if USE_CACHE:
                     print(f"date from query params: {date}")
                     db_ref = get_db_reference(location, meal, date)
