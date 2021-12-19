@@ -1,7 +1,9 @@
 .DS_Store
+#virtualenv
 Scripts
-__pycache__
 Lib
+pyvenv.cfg
+
+__pycache__
 *.json
 .vercel
-pyvenv.cfg
