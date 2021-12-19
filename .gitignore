@@ -1,1 +1,7 @@
 .DS_Store
+Scripts
+__pycache__
+Lib
+*.json
+.vercel
+pyvenv.cfg
