@@ -89,6 +89,9 @@ def uncapitalize_first_letter(s: str) -> str:
 def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
     '''Given a location of a cafeteria, get the corresponding JSON information and 
     return a Python dictionary of the relevant components'''
+    weekday = datetime.strptime(date,"%m/%d/%Y").weekday()
+    if weekday > 4 and meal_id == 1:
+        meal_id=3
     
     restaurant, url = url_dict[location]
 
@@ -205,9 +208,6 @@ class handler(BaseHTTPRequestHandler):
                         date = query_params["date"][0]#note: data gets decoded by urllib, so it will contain slashes.
                 elif "date" in query_keys:
                     raise InvalidQueryException("You can't provide the date without the meal (not implemented in the server). LMK if you think there is a use for providing only the date.")
-                weekday = datetime.strptime(date,"%m/%d/%Y").weekday()
-                if weekday > 4 and meal == 1:
-                    meal=3
                 if USE_CACHE:
                     print(f"date from query params: {date}")
                     db_ref = get_db_reference(location, meal, date)
