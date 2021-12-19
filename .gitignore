@@ -1,2 +1,10 @@
 .DS_Store
 *.swp
+#virtualenv
+Scripts
+Lib
+pyvenv.cfg
+
+__pycache__
+*.json
+.vercel
