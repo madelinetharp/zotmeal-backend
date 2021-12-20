@@ -30,3 +30,33 @@ def get_irvine_time():
     'Return the local time in normalized format'
     local_time = time.gmtime(time.time() + IRVINE_OFFSET)
     return local_time
+
+def get_current_meal():
+    '''
+    Return meal code for current time of the day
+    Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
+    '''
+    irvine_time = get_irvine_time()
+    now = normalize_time(irvine_time)
+
+    breakfast   = 0000
+    lunch       = 1100
+    dinner      = 1630
+    
+    # After 16:30, Dinner, Meal-Code: 2
+    if now >= dinner:
+        return 2
+
+    # After 11:00 Weekend, Brunch, Meal-Code: 3
+    if now >= lunch and irvine_time.tm_wday >= 5:
+        return 3
+
+    # After 11:00 Weekday, Lunch, Meal-Code: 1
+    if now >= lunch:
+        return 1
+
+    # After 00:00, Breakfast, Meal-Code: 0
+    if now >= breakfast:
+        return 0
+
+

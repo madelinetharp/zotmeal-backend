@@ -1,0 +1,61 @@
+#anteatery 01/14/2022 breakfast
+#https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
+
+# brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
+# anteatery examples:
+# example url with query (10/14/2021 lunch): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
+# example 2 (10/14/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F14%2F2021
+# (10/15/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F15%2F2021
+# (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
+
+LOCATION_INFO   = {
+    'brandywine': {
+        'official'  : 'Brandywine',
+        'id'        : 3314,
+    },
+
+    'anteatery': {
+        'official'  : 'Anteatery',
+        'id'        : 3056,
+    }
+}
+
+# Default opening and closing times
+# TODO: Might implement a class to determine default open/close depending on day
+DEFAULT_OPEN    = 715
+DEFAULT_CLOSE   = 2200
+
+
+# Relevant Nutrition Properties
+PROPERTIES = (
+    'IsVegan',
+    'IsVegetarian',
+    'ServingSize',
+    'ServingUnit',
+    'Calories',
+    'CaloriesFromFat',
+    'TotalFat',
+    'TransFat',
+    'Cholesterol',
+    'Sodium',
+    'TotalCarbohydrates',
+    'DietaryFiber',
+    'Sugars',
+    'Protein',
+    'VitaminA',
+    'VitaminC',
+    'Calcium',
+    'Iron',
+    'SaturatedFat'
+)
+
+# MEAL ID > (PERIOD ID, MEAL NAME)
+# meals can be referred to by their id or period id alias
+# TODO: there might be a better way to implement this
+MEAL_TO_PERIOD = {
+    0: (49, 'Breakfast'),
+    1: (106, 'Lunch'),
+    2: (107, 'Dinner'),
+    3: (2651, 'Brunch')
+}
+
