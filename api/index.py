@@ -242,8 +242,6 @@ def extract_schedule(location: str, date: str) -> dict:
     return a dict of the meal periods
     '''
     schedule_json = GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date)
-    
-    print(schedule_json)
     meal_periods = dict([
         (
             meal['PeriodName'], 
@@ -265,14 +263,15 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     if date is None:
         date = time.strftime('%m/%d/%Y')
 
+    name        = GLOBAL_LOCATION_MANAGER.get_name(location)
     schedule    = extract_schedule(location, date)
     isOpen      = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
 
     diner_json = {
         'refreshTime'   : int(time.time()),
-        'restaurant'    : GLOBAL_LOCATION_MANAGER.get_name(location),
         'isOpen'        : isOpen,
         'schedule'      : schedule,
+        'restaurant'    : name,
         'all'           : [],
     }
 
