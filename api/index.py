@@ -81,7 +81,7 @@ GLOBAL_LOCATION_MANAGER = LocationManager()
 
 # Default opening and closing times
 DEFAULT_OPEN    = 715
-DEFAULT_CLOSE   = 2400
+DEFAULT_CLOSE   = 2200
 
 # Default offset for Irvine from GMT (GMT-8 = -28000 seconds)
 IRVINE_OFFSET = -28800
@@ -270,7 +270,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     diner_json = {
         'refreshTime'   : int(time.time()),
         'isOpen'        : isOpen,
-        'schedule'      : schedule,
+        'schedule'      : GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date),
         'restaurant'    : name,
         'all'           : [],
     }
