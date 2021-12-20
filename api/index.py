@@ -74,7 +74,7 @@ if USE_CACHE:
             meal = get_current_meal()
 
         if date is None:
-            irvine_time = _get_irvine_time()
+            irvine_time = get_irvine_time()
             date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
 
         modified_datestring = date.replace("/","|")
@@ -87,8 +87,8 @@ def get_current_meal():
     Return meal code for current time of the day
     Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
     '''
-    irvine_time = _get_irvine_time()
-    now = _normalize_time(irvine_time)
+    irvine_time = get_irvine_time()
+    now = normalize_time(irvine_time)
 
     breakfast   = 0000
     lunch       = 1100
@@ -127,11 +127,11 @@ def extract_menu(products_list, station_id_to_name):
         item_dict = {
             'name'          : details['MarketingName'],
             'description'   : details['ShortDescription'],
-            'nutrition'     : dict([(_lower_first_letter(key), details[key]) for key in PROPERTIES]) | 
+            'nutrition'     : dict([(lower_first_letter(key), details[key]) for key in PROPERTIES]) | 
                 {
-                    'isEatWell'       : _find_icon('EatWell', details),
-                    'isPlantForward'  : _find_icon('PlantForward', details),
-                    'isWholeGrain'    : _find_icon('WholeGrain', details),
+                    'isEatWell'       : find_icon('EatWell', details),
+                    'isPlantForward'  : find_icon('PlantForward', details),
+                    'isWholeGrain'    : find_icon('WholeGrain', details),
                 },
         } 
 
@@ -146,10 +146,10 @@ def extract_schedule(location: str, date: str) -> dict:
     schedule_json = location_management.get_schedule_json(location, date)
     meal_periods = dict([
         (
-            _lower_first_letter(meal['PeriodName']), 
+            lower_first_letter(meal['PeriodName']), 
             {
-                'start' : _read_schedule_UTC(meal['UtcMealPeriodStartTime']),
-                'end'   : _read_schedule_UTC(meal['UtcMealPeriodEndTime']),
+                'start' : read_schedule_UTC(meal['UtcMealPeriodStartTime']),
+                'end'   : read_schedule_UTC(meal['UtcMealPeriodEndTime']),
             }
         ) for meal in schedule_json])
 
@@ -168,7 +168,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     restaurant  = location_management.get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
-    currentMeal = _lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
+    currentMeal = lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
     foodItems   = []
 
     diner_json = {
