@@ -12,6 +12,29 @@ from collections import defaultdict
 brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
 eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
 
+PROPERTIES = (
+    "IsVegan",
+    "IsVegetarian",
+    "ServingSize",
+    "ServingUnit",
+    "Calories",
+    "CaloriesFromFat",
+    "TotalFat",
+    "TransFat",
+    "Cholesterol",
+    "Sodium",
+    "TotalCarbohydrates",
+    "DietaryFiber",
+    "Sugars",
+    "Protein",
+    "VitaminA",
+    "VitaminC",
+    "Calcium",
+    "Iron",
+    "SaturatedFat"
+)
+
+
 url_dict = {
     "Brandywine"    : brandy_info,
     "brandywine"    : brandy_info,
@@ -116,26 +139,6 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
 
     products_list = menu_data["MenuProducts"]
 
-    PROPERTIES = [
-    "IsVegan",
-    "IsVegetarian",
-    "ServingSize",
-    "ServingUnit",
-    "Calories",
-    "CaloriesFromFat",
-    "TotalFat",
-    "TransFat",
-    "Cholesterol",
-    "Sodium",
-    "TotalCarbohydrates",
-    "DietaryFiber",
-    "Sugars",
-    "Protein",
-    "VitaminA",
-    "VitaminC",
-    "Calcium",
-    "Iron",
-    "SaturatedFat"]
 
     def _find_icon(icon_property, food_info):
         return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
@@ -229,11 +232,13 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             #json.dump(data,self.wfile,ensure_ascii=False) #TODO: this clean solution doesn't work for some reason. says bytes-like is required, not str. figure out why
             self.wfile.write(json.dumps(data,ensure_ascii=False, indent = 4).encode())
+
         except NotFoundException:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
             self.end_headers()
             self.wfile.write("Invalid path. The only one available is /api".encode())
+
         except Exception as e:
             traceback.print_exc()
             self.send_response(500)
