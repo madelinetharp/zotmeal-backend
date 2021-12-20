@@ -1,18 +1,92 @@
-from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
-import json#imported to format dict as json string
-import urllib.parse, urllib.request #imported to get site contents from internet
-import time#imported to get timestamp
-import traceback#for error handling
+from http.server import BaseHTTPRequestHandler 
+import json
+import urllib.parse, urllib.request 
+import time
+import traceback
 import os
 from datetime import datetime
 from collections import defaultdict
 import requests 
+import calendar
+
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
-brandy_info = ('Brandywine', 'https://uci.campusdish.com/api/menu/GetMenus?locationId=3314&periodId={meal_param}&date={date_param}'.format)
-eatery_info = ('Anteatery', 'https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&periodId={meal_param}&date={date_param}'.format)
 
+# Class to store general information, queries, and perform operations on them
+class LocationManager:
+    MENU_QUERY      = 'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&periodId={meal_param}&date={date_param}'.format
+    SCHEDULE_QUERY  = 'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location_param}&date={date_param}'.format 
+
+    LOCATION_INFO   = {
+        'brandywine': {
+            'official'  : 'Brandywine',
+            'id'        : 3314,
+            'aliases'   : [],
+        },
+
+        'anteatery': {
+            'official'  : 'Anteatery',
+            'id'        : 3056,
+            'aliases'   : [],
+        }
+    }
+
+    def __init__(self):
+        pass
+
+    # TODO: make location validater and resolver more robust/accurate; maybe create a __check_alias upon not-immediate match
+    def is_valid_location(self, location: str) -> bool:
+        'Check if the location is valid, including aliases'
+        if location in self.LOCATION_INFO:
+            return True
+        return False
+
+    def resolve_location(self, location: str) -> bool:
+        '''
+        Assuming the location is a valid alias,
+        resolve the location to a key in the ALL_LOCATIONS dict
+        '''
+        return location.lower()
+
+    def get_name(self, location: str):
+        'Assuming valid location is provided, return the official name for diner'
+        return self.LOCATION_INFO[location]['official']
+
+    def get_id(self, location: str) -> int:
+        'Assuming valid location is provided, return id for diner'
+        return self.LOCATION_INFO[location]['id']
+    
+    def get_menu_data(self, location, meal_id, date):
+        '''
+        Given a valid location, meal_id, and date,
+        perform get request for the diner_json and return the dict at diner_json['Menu']
+        '''
+        return requests.get(
+                self.MENU_QUERY(location_param = self.get_id(location), meal_param = meal_id, date_param = date)
+                ).json()['Menu']
+    
+    def get_schedule_json(self, location, date):
+        '''
+        Given a valid location and date,
+        perform get request for the schedule_json
+        '''
+        return requests.get(
+                self.SCHEDULE_QUERY(location_param = self.get_id(location), date_param = date)
+                ).json()['Result']
+
+
+# Initialize a location manager
+GLOBAL_LOCATION_MANAGER = LocationManager()
+
+# Default opening and closing times
+DEFAULT_OPEN    = 715
+DEFAULT_CLOSE   = 2400
+
+# Default offset for Irvine from GMT (GMT-8 = -28000 seconds)
+IRVINE_OFFSET = -28800
+
+# Relevant Nutrition Properties
 PROPERTIES = (
     'IsVegan',
     'IsVegetarian',
@@ -35,17 +109,12 @@ PROPERTIES = (
     'SaturatedFat'
 )
 
-
-ALL_LOCATIONS = {
-    'brandywine'    : brandy_info,
-    'anteatery'     : eatery_info
-}
-
-MEAL_IDS = {
-    0: 49,
-    1: 106,
-    2: 107,
-    3: 2651
+# MEAL ID to PERIOD ID aliases
+MEAL_TO_PERIOD = {
+    0: 49,     # Breakfast
+    1: 106,    # Lunch
+    2: 107,    # Dinner
+    3: 2651    # Brunch
 }
 
 USE_CACHE = bool(os.getenv("USE_CACHE"))
@@ -77,10 +146,47 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
 
 
+# Helper functions
+def _lower_first_letter(s: str) -> str:
+    'Lowercase the first letter of a string'
+    return s[0].lower() + s[1:]
+
+def _find_icon(icon_property: str, food_info: dict) -> bool:
+    'Return true if the badge can be found in any of the dietary information images'
+    return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
+
+def _normalize_time(time_struct: time.struct_time) -> int:
+    'Formats the time into a 4-digit integer, controls how time is represented in API'
+    return int(f'{time_struct.tm_hour}{time_struct.tm_min:02}')
+
+def _read_schedule_UTC(utc_time: str) -> int:
+    '''
+    Convert utc time string from UCI API to time.struct_time,
+    convert struct to seconds since epoch, subtract 8 hours, and normalize to
+    '''
+    gmt_struct = time.strptime(utc_time, '%Y-%m-%dT%H:%M:%S.0000000')
+    local_struct = time.gmtime(calendar.timegm(gmt_struct) - IRVINE_OFFSET)
+    return _normalize_time(local_struct)
+
+
+# Basic Operations
+def get_irvine_time():
+    'Return the local time in normalized format'
+    local_time = time.gmtime(time.time() - IRVINE_OFFSET)
+    return _normalize_time(local_time)
+
+def check_open(breakfast_start: int = DEFAULT_OPEN, dinner_end: int = DEFAULT_CLOSE, time=None):
+    'Given the start time for breakfast and end time for dinner, return true if the diner is open'
+    if time is None:
+        time = get_irvine_time()
+    return time in range(breakfast_start, dinner_end)
+
 def get_current_meal():
-    '''Return meal code for current time of the day'''
-    local_time = time.gmtime(time.time() - 28800)
-    now = int(f'{local_time.tm_hour}{local_time.tm_min}')
+    '''
+    Return meal code for current time of the day
+    Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
+    '''
+    now = get_irvine_time()
     
     breakfast   = 0000
     lunch       = 1100
@@ -103,71 +209,87 @@ def get_current_meal():
         return 0
 
 
-def uncapitalize_first_letter(s: str) -> str:
-    'Capitalize the first letter of a string'
-    return s[0].lower() + s[1:]
+# JSON parsing functions
+def extract_menu(products_list, station_id_to_name):
+    '''
+    Given a list of all products and a dict translating station id to name
+    return a dict...
+    '''
+    menu = defaultdict(lambda: defaultdict(lambda: []))
 
+    for entry in products_list:
+        details         = entry['Product']
+        station_name    = station_id_to_name[entry['StationId']].replace('/ ',' / ')
+        category_name   = details['Categories'][0]['DisplayName']
 
-def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
-    '''Given a location of a cafeteria, get the corresponding JSON information and 
-    return a Python dictionary of the relevant components'''
+        item_dict = {
+            'name'          : details['MarketingName'],
+            'description'   : details['ShortDescription'],
+            'nutrition'     : dict([(_lower_first_letter(key), details[key]) for key in PROPERTIES]) | 
+                {
+                    'isEatWell'       : _find_icon('EatWell', details),
+                    'isPlantForward'  : _find_icon('PlantForward', details),
+                    'isWholeGrain'    : _find_icon('WholeGrain', details),
+                },
+        } 
+
+        menu[station_name][category_name].append(item_dict)
+    return menu
+
+def extract_schedule(location: str, date: str) -> dict:
+    '''
+    Given a location and a date as a string, perform a get request for that date's schedule,
+    return a dict of the meal periods
+    '''
+    schedule_json = GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date)
     
-    restaurant, unformatted_url = ALL_LOCATIONS[location]
+    meal_periods = dict([
+        (
+            meal['PeriodName'], 
+            {
+                'start' : _read_schedule_UTC(meal['UtcMealPeriodStartTime']),
+                'end'   : _read_schedule_UTC(meal['UtcMealPeriodEndTime']),
+            }
+        ) for meal in schedule_json])
+
+    return meal_periods
+
+def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict:
+    '''Given the name of a diner, get the corresponding JSON information and 
+    return a Python dictionary of the relevant components'''
 
     if meal_id is None:
         meal_id = get_current_meal()
 
     if date is None:
-        date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
+        date = time.strftime('%m/%d/%Y')
 
-    data = requests.get(
-            unformatted_url(meal_param = MEAL_IDS[meal_id], date_param = date)
-            ).json()
+    schedule = extract_schedule(location, date)
 
-    menu_data = data["Menu"]
-    
-    final_dict = {
+    diner_json = {
         'refreshTime'   : int(time.time()),
-        'restaurant'    : restaurant,
+        'restaurant'    : GLOBAL_LOCATION_MANAGER.get_name(location),
+        'isOpen'        : check_open(schedule['Breakfast']['start'], schedule['Dinner']['end']),
+        'schedule'      : schedule,
         'all'           : [],
     }
 
-    station_dict        = defaultdict(lambda: defaultdict(lambda: []))
+    menu_data = GLOBAL_LOCATION_MANAGER.get_menu_data(location, meal_id, date)
 
-    stations_list       = menu_data["MenuStations"]
-    station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in stations_list])
-    products_list       = menu_data["MenuProducts"]
-
-
-    def _find_icon(icon_property, food_info):
-        return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
-
-    for entry in products_list:
-        details = entry["Product"]
-        station_name = station_id_to_name[entry["StationId"]].replace("/ "," / ")
-        category_name = details["Categories"][0]["DisplayName"]
-
-        item_dict = {
-            'name'          : details['MarketingName'],
-            'description'   : details['ShortDescription'],
-            'nutrition'     : dict([(uncapitalize_first_letter(key), details[key]) for key in PROPERTIES]) | 
-                {
-                'isEatWell'       : _find_icon('EatWell', details),
-                'isPlantForward'  : _find_icon('PlantForward', details),
-                'isWholeGrain'    : _find_icon('WholeGrain', details),
-                },
-        } 
-
-        station_dict[station_name][category_name].append(item_dict)
+    station_dict = extract_menu(
+                    station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),
+                    products_list       = menu_data["MenuProducts"]
+                    )
     
-    for station_name in station_dict.keys():
+    for station_name in station_dict:
+        diner_json['all'].append(
+            {
+                'station'   : station_name, 
+                'menu'      : [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
+            }
+        )
 
-        final_dict["all"].append({
-        'station'   : station_name, 
-        'menu'      : [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
-        })
-
-    return final_dict
+    return diner_json
 
 # brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 # anteatery examples:
@@ -178,6 +300,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
 
 class InvalidQueryException(Exception):
     pass
+
 class NotFoundException(Exception):
     pass
 
@@ -224,7 +347,7 @@ class handler(BaseHTTPRequestHandler):
         
         location = query['location'][0]
 
-        if location not in ALL_LOCATIONS.keys():
+        if not GLOBAL_LOCATION_MANAGER.is_valid_location(location):
             raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(ALL_LOCATIONS.keys())}')
 
         return location
@@ -270,13 +393,13 @@ class handler(BaseHTTPRequestHandler):
                 db_data = db_ref.get()
 
                 if(db_data is None):
-                    data = scrape_menu_to_dict(location, meal, date)
+                    data = get_diner_json(location, meal, date)
                     db_ref.set(data)
 
                 else:
                     data = db_data
             else:
-                data = scrape_menu_to_dict(location, meal, date)
+                data = get_diner_json(location, meal, date)
                     
             self.process_response(
                     status_code = 200, 
