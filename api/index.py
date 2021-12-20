@@ -3,11 +3,11 @@ import json#imported to format dict as json string
 import urllib.parse, urllib.request #imported to get site contents from internet
 import time#imported to get timestamp
 import traceback#for error handling
-import os
-from datetime import datetime
+import os#imported to get environment variables
 from collections import defaultdict
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
+
 
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
@@ -24,7 +24,7 @@ if USE_CACHE:
         'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
     })
 
-    def get_db_reference(location: str, meal: int, date: str) -> firebase_admin.db.Reference:
+    def get_db_reference(location: str, meal: int, date: str) -> db.Reference:
         if meal is None:
             meal = get_current_meal()
 
@@ -35,15 +35,14 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
-def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
+def get_irvine_time() -> time.struct_time:#tuple of two ints for hours and minutes
     '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
-    local_time = time.gmtime(time.time() - 28800)
-    return local_time.tm_hour, local_time.tm_min
+    return time.gmtime(time.time() - 28800)
 
 def get_current_meal():
     '''Return meal code for current time of the day'''
-    local_time = time.gmtime(time.time() - 28800)
-    now = int(f'{local_time.tm_hour}{local_time.tm_min}')
+    irvine_time = get_irvine_time()
+    now = int(f'{irvine_time.tm_hour}{irvine_time.tm_min}')
     
     breakfast   = 0000
     lunch       = 1100
@@ -54,7 +53,7 @@ def get_current_meal():
         return 2
 
     # After 11:00 Weekend, Brunch, Meal-Code: 3
-    if now >= lunch and local_time.tm_wday >= 5:
+    if now >= lunch and irvine_time.tm_wday >= 5:
         return 3
 
     # After 11:00 Weekday, Lunch, Meal-Code: 1
@@ -86,11 +85,9 @@ meal_ids = {
 def uncapitalize_first_letter(s: str) -> str:
     return s[0].lower()+s[1:]
 
-def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
+def scrape_menu_to_dict(restaurant: str, url: str, meal_id: int = None, date: str = None) -> dict:
     '''Given a location of a cafeteria, get the corresponding JSON information and 
     return a Python dictionary of the relevant components'''
-    
-    restaurant, url = url_dict[location]
 
     if meal_id is None:
         meal_id = get_current_meal()
@@ -197,6 +194,7 @@ class handler(BaseHTTPRequestHandler):
                 location = query_params["location"][0]
                 if not location in url_dict.keys():#url_dict is in global scope
                     raise InvalidQueryException(f"The location specified is not valid. Valid locations: {list(url_dict.keys())}")
+                restaurant, url = url_dict[location]
                 meal=None
                 date=None
                 if "meal" in query_keys:
@@ -206,16 +204,16 @@ class handler(BaseHTTPRequestHandler):
                 elif "date" in query_keys:
                     raise InvalidQueryException("You can't provide the date without the meal (not implemented in the server). LMK if you think there is a use for providing only the date.")
                 if USE_CACHE:
-                    print(f"date from query params: {date}")
-                    db_ref = get_db_reference(location, meal, date)
+                    db_ref = get_db_reference(restaurant, meal, date)
+                    print(f"caching using firebase path: {db_ref.path}")
                     db_data = db_ref.get()
                     if(db_data==None):
-                        data = scrape_menu_to_dict(location, meal, date)
+                        data = scrape_menu_to_dict(restaurant, url, meal, date)
                         db_ref.set(data)
                     else:
                         data = db_data
                 else:
-                    data = scrape_menu_to_dict(location, meal, date)
+                    data = scrape_menu_to_dict(restaurant, url, meal, date)
                 
             except InvalidQueryException as e:
                 self.send_response(400)
