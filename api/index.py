@@ -426,6 +426,6 @@ class handler(BaseHTTPRequestHandler):
             self.process_response(
                     status_code = 500, 
                     headers     = ('Content-type', 'text/plain'), 
-                    data        = 'Internal Server Error. Raise an issue on the github repo: https://github.com/EricPedley/zotmeal-backend'
+                    data        = 'Internal Server Error. Raise an issue on the github repo: https://github.com/EricPedley/zotmeal-backend. Details: {e}'
             )
 
