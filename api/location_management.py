@@ -1,16 +1,5 @@
+from .CONSTANTS import LOCATION_INFO
 import requests
-
-LOCATION_INFO   = {
-    'brandywine': {
-        'official'  : 'Brandywine',
-        'id'        : 3314,
-    },
-
-    'anteatery': {
-        'official'  : 'Anteatery',
-        'id'        : 3056,
-    }
-}
 
 def is_valid_location(location: str) -> bool:
     'Check if the location is valid'
