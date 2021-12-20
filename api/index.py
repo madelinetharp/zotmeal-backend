@@ -9,10 +9,10 @@ from collections import defaultdict
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
-brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
-eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
+brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314&periodId={meal_param}&date={date_param}".format)
+eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&periodId={meal_param}&date={date_param}".format)
 
-url_dict = {
+ALL_LOCATIONS = {
     "Brandywine"    : brandy_info,
     "brandywine"    : brandy_info,
     "TheAnteatery"  : eatery_info,
@@ -20,7 +20,7 @@ url_dict = {
     "anteatery"     : eatery_info
 }
 
-meal_ids = {
+MEAL_IDS = {
     0: 49,
     1: 106,
     2: 107,
@@ -53,10 +53,6 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
-def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
-    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
-    local_time = time.gmtime(time.time() - 28800)
-    return local_time.tm_hour, local_time.tm_min
 
 def get_current_meal():
     '''Return meal code for current time of the day'''
@@ -90,7 +86,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     '''Given a location of a cafeteria, get the corresponding JSON information and 
     return a Python dictionary of the relevant components'''
     
-    restaurant, url = url_dict[location]
+    restaurant, url = ALL_LOCATIONS[location]
 
     if meal_id is None:
         meal_id = get_current_meal()
@@ -98,7 +94,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     if date is None:
         date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
 
-    url += f"&periodId={meal_ids[meal_id]}&date={date}"
+    url = url(meal_param = MEAL_IDS[meal_id], date_param = date)
     r = urllib.request.urlopen(url)
     data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
     menu_data = data["Menu"]
@@ -228,7 +224,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type','application/json')
             self.end_headers()
             #json.dump(data,self.wfile,ensure_ascii=False) #TODO: this clean solution doesn't work for some reason. says bytes-like is required, not str. figure out why
-            self.wfile.write(json.dumps(data,ensure_ascii=False).encode())
+            self.wfile.write(json.dumps(data, ensure_ascii = False, indent = 4).encode())
         except NotFoundException:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
