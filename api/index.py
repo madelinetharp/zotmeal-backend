@@ -207,7 +207,7 @@ class handler(BaseHTTPRequestHandler):
                     db_ref = get_db_reference(restaurant, meal, date)
                     print(f"caching using firebase path: {db_ref.path}")
                     db_data = db_ref.get()
-                    if(db_data==None):
+                    if db_data is None:
                         data = scrape_menu_to_dict(restaurant, url, meal, date)
                         db_ref.set(data)
                     else:
