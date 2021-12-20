@@ -1,10 +1,9 @@
-from http.server import BaseHTTPRequestHandler 
-import json
-import urllib.parse, urllib.request 
-import time
-import traceback
-import os
-from datetime import datetime
+from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
+import json#imported to format dict as json string
+import urllib.parse, urllib.request #imported to get site contents from internet
+import time#imported to get timestamp
+import traceback#for error handling
+import os#imported to get environment variables
 from collections import defaultdict
 import requests 
 import calendar
@@ -139,13 +138,13 @@ if USE_CACHE:
         'databaseURL': os.getenv("FIREBASE_DATABASE_URL")
     })
 
-
-    def get_db_reference(location: str, meal: int, date: str) -> firebase_admin.db.Reference:
+    def get_db_reference(location: str, meal: int, date: str) -> db.Reference:
         if meal is None:
             meal = get_current_meal()
 
         if date is None:
-            date = time.strftime("%m/%d/%Y")
+            irvine_time = get_irvine_time()
+            date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
 
         modified_datestring = date.replace("/","|")
         
@@ -180,7 +179,7 @@ def _read_schedule_UTC(utc_time: str) -> int:
 def get_irvine_time():
     'Return the local time in normalized format'
     local_time = time.gmtime(time.time() + IRVINE_OFFSET)
-    return _normalize_time(local_time)
+    return local_time
 
 def check_open(breakfast_start: int = DEFAULT_OPEN, dinner_end: int = DEFAULT_CLOSE, time=None):
     'Given the start time for breakfast and end time for dinner, return true if the diner is open'
@@ -193,8 +192,9 @@ def get_current_meal():
     Return meal code for current time of the day
     Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
     '''
-    now = get_irvine_time()
-    
+    irvine_time = get_irvine_time()
+    now = _normalize_time(irvine_time)
+
     breakfast   = 0000
     lunch       = 1100
     dinner      = 1630
@@ -204,7 +204,7 @@ def get_current_meal():
         return 2
 
     # After 11:00 Weekend, Brunch, Meal-Code: 3
-    if now >= lunch and local_time.tm_wday >= 5:
+    if now >= lunch and irvine_time.tm_wday >= 5:
         return 3
 
     # After 11:00 Weekday, Lunch, Meal-Code: 1
