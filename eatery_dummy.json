@@ -1,1 +1,750 @@
-{"refreshTime": 1639864402, "restaurant": "Anteatery", "all": []}
+{
+    "refreshTime": 1640021393,
+    "restaurant": "Anteatery",
+    "isOpen": false,
+    "schedule": {
+        "Breakfast": {
+            "start": 2315,
+            "end": 300
+        },
+        "Lunch": {
+            "start": 300,
+            "end": 830
+        },
+        "Dinner": {
+            "start": 830,
+            "end": 1400
+        }
+    },
+    "all": [
+        {
+            "station": "Vegan",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Tofu-Potato Hash",
+                            "description": "",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "1",
+                                "servingUnit": "serving",
+                                "calories": "120",
+                                "caloriesFromFat": "50",
+                                "totalFat": "6",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "100",
+                                "totalCarbohydrates": "9",
+                                "dietaryFiber": "2",
+                                "sugars": "1",
+                                "protein": "8",
+                                "vitaminA": null,
+                                "vitaminC": "14.65",
+                                "calcium": "",
+                                "iron": "1.07",
+                                "saturatedFat": "1",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Vegan Home-Style Pancakes",
+                            "description": "Warm vegan pancakes made from scratch with soy milk and vanilla",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "2",
+                                "servingUnit": "each",
+                                "calories": "240",
+                                "caloriesFromFat": "50",
+                                "totalFat": "6",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "250",
+                                "totalCarbohydrates": "42",
+                                "dietaryFiber": "2",
+                                "sugars": "11",
+                                "protein": "6",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "211.17",
+                                "iron": "2.28",
+                                "saturatedFat": "0.5",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Desserts",
+                    "items": [
+                        {
+                            "name": "Vegan Zucchini Bread",
+                            "description": "Moist spiced vegan zucchini bread with raisins and walnuts",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "/64 cut",
+                                "calories": "270",
+                                "caloriesFromFat": "110",
+                                "totalFat": "13",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "150",
+                                "totalCarbohydrates": "38",
+                                "dietaryFiber": "2",
+                                "sugars": "21",
+                                "protein": "3",
+                                "vitaminA": null,
+                                "vitaminC": "3.17",
+                                "calcium": "67.04",
+                                "iron": "0.96",
+                                "saturatedFat": "1.5",
+                                "isEatWell": false,
+                                "isPlantForward": true,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Soups",
+            "menu": [
+                {
+                    "category": "Cereals",
+                    "items": [
+                        {
+                            "name": "Cream of Wheat",
+                            "description": "Homestyle cream of wheat cereal",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "6",
+                                "servingUnit": "fl oz",
+                                "calories": "90",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "5",
+                                "totalCarbohydrates": "20",
+                                "dietaryFiber": "less than 1",
+                                "sugars": "0",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "210.07",
+                                "iron": "7.32",
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Old Fashioned Oatmeal",
+                            "description": "Homestyle oatmeal cereal",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "6",
+                                "servingUnit": "fl oz",
+                                "calories": "110",
+                                "caloriesFromFat": "20",
+                                "totalFat": "2",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "5",
+                                "totalCarbohydrates": "20",
+                                "dietaryFiber": "3",
+                                "sugars": "0",
+                                "protein": "4",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "11.01",
+                                "iron": "1.77",
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": true
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Farmer'S Market",
+            "menu": [
+                {
+                    "category": "Cereals",
+                    "items": [
+                        {
+                            "name": "Overnight Strawberry Oats",
+                            "description": "A creamy combination of oatmeal, milk, yogurt, honey and strawberries served chilled",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "4",
+                                "servingUnit": "fl oz",
+                                "calories": "170",
+                                "caloriesFromFat": "15",
+                                "totalFat": "1.5",
+                                "transFat": "0",
+                                "cholesterol": "less than 5",
+                                "sodium": "80",
+                                "totalCarbohydrates": "33",
+                                "dietaryFiber": "3",
+                                "sugars": "21",
+                                "protein": "8",
+                                "vitaminA": null,
+                                "vitaminC": "24.19",
+                                "calcium": "90.06",
+                                "iron": "1.33",
+                                "saturatedFat": "0",
+                                "isEatWell": true,
+                                "isPlantForward": true,
+                                "isWholeGrain": true
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Protein",
+                    "items": [
+                        {
+                            "name": "Cottage Cheese",
+                            "description": "Creamy cottage cheese",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "/4 cup",
+                                "calories": "45",
+                                "caloriesFromFat": "5",
+                                "totalFat": "0.5",
+                                "transFat": "0",
+                                "cholesterol": "less than 5",
+                                "sodium": "240",
+                                "totalCarbohydrates": "3",
+                                "dietaryFiber": "0",
+                                "sugars": "2",
+                                "protein": "7",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Nonfat Strawberry Yogurt",
+                            "description": "Creamy nonfat strawberry yogurt",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "1",
+                                "servingUnit": "/4 cup",
+                                "calories": "60",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "less than 5",
+                                "sodium": "30",
+                                "totalCarbohydrates": "12",
+                                "dietaryFiber": "0",
+                                "sugars": "9",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Nonfat Vanilla Yogurt",
+                            "description": "Nonfat creamy vanilla yogurt",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "1",
+                                "servingUnit": "/4 cup",
+                                "calories": "60",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "less than 5",
+                                "sodium": "30",
+                                "totalCarbohydrates": "12",
+                                "dietaryFiber": "0",
+                                "sugars": "9",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Grains ",
+                    "items": [
+                        {
+                            "name": "Honey Granola",
+                            "description": "Crunchy cinnamon-spiced, honey-coated oats",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "/4 cup",
+                                "calories": "110",
+                                "caloriesFromFat": "25",
+                                "totalFat": "2.5",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "15",
+                                "totalCarbohydrates": "22",
+                                "dietaryFiber": "2",
+                                "sugars": "9",
+                                "protein": "3",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "1",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Salads",
+                    "items": [
+                        {
+                            "name": "Fresh Grapefruit",
+                            "description": "Fresh Grapefruit",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "each",
+                                "calories": "35",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "0",
+                                "totalCarbohydrates": "9",
+                                "dietaryFiber": "1",
+                                "sugars": "0",
+                                "protein": "1",
+                                "vitaminA": null,
+                                "vitaminC": "43.68",
+                                "calcium": "17.71",
+                                "iron": "0.14",
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Orange Segments",
+                            "description": "Orange segments",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": null,
+                                "servingUnit": null,
+                                "calories": null,
+                                "caloriesFromFat": null,
+                                "totalFat": null,
+                                "transFat": null,
+                                "cholesterol": null,
+                                "sodium": null,
+                                "totalCarbohydrates": null,
+                                "dietaryFiber": null,
+                                "sugars": null,
+                                "protein": null,
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": null,
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Raisins",
+                            "description": "Seedless raisins",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "2",
+                                "servingUnit": "tablespoons",
+                                "calories": "60",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "0",
+                                "totalCarbohydrates": "17",
+                                "dietaryFiber": "less than 1",
+                                "sugars": "13",
+                                "protein": "1",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Red Grapes",
+                            "description": "Fresh red seedless grapes",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "/4 cup",
+                                "calories": "30",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "0",
+                                "totalCarbohydrates": "8",
+                                "dietaryFiber": "0",
+                                "sugars": "7",
+                                "protein": "0",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Condiments",
+                    "items": [
+                        {
+                            "name": "Strawberry Preserves",
+                            "description": "Strawberry Preserves",
+                            "nutrition": {
+                                "isVegan": true,
+                                "isVegetarian": true,
+                                "servingSize": "2",
+                                "servingUnit": "tablespoons",
+                                "calories": "100",
+                                "caloriesFromFat": "0",
+                                "totalFat": "0",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "5",
+                                "totalCarbohydrates": "25",
+                                "dietaryFiber": "less than 1",
+                                "sugars": "20",
+                                "protein": "0",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "0",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Whipped Cream Cheese",
+                            "description": "Fluffy whipped cream cheese",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "2",
+                                "servingUnit": "tablespoons",
+                                "calories": "90",
+                                "caloriesFromFat": "80",
+                                "totalFat": "9",
+                                "transFat": "0",
+                                "cholesterol": "25",
+                                "sodium": "80",
+                                "totalCarbohydrates": "less than 1",
+                                "dietaryFiber": "0",
+                                "sugars": "less than 1",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": "5",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Home",
+            "menu": [
+                {
+                    "category": "Entrées",
+                    "items": [
+                        {
+                            "name": "Scrambled Eggs",
+                            "description": "Freshly scrambled eggs",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "/2 cup",
+                                "calories": "140",
+                                "caloriesFromFat": "80",
+                                "totalFat": "9",
+                                "transFat": "0",
+                                "cholesterol": "365",
+                                "sodium": "320",
+                                "totalCarbohydrates": "less than 1",
+                                "dietaryFiber": "0",
+                                "sugars": "0",
+                                "protein": "12",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "60.44",
+                                "iron": "1.73",
+                                "saturatedFat": "3",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "French Toast",
+                            "description": "Golden brown and fluffy cinnamon-spiced thick-cut French toast",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "slice",
+                                "calories": "160",
+                                "caloriesFromFat": "25",
+                                "totalFat": "2.5",
+                                "transFat": "0",
+                                "cholesterol": "50",
+                                "sodium": "270",
+                                "totalCarbohydrates": "26",
+                                "dietaryFiber": "0",
+                                "sugars": "6",
+                                "protein": "6",
+                                "vitaminA": null,
+                                "vitaminC": "0.03",
+                                "calcium": "64.52",
+                                "iron": "2.06",
+                                "saturatedFat": "0.5",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Sides",
+                    "items": [
+                        {
+                            "name": "Hash Brown Potato Patty",
+                            "description": "Crispy fried shredded potato patty",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "1",
+                                "servingUnit": "each",
+                                "calories": "130",
+                                "caloriesFromFat": "80",
+                                "totalFat": "9",
+                                "transFat": "0",
+                                "cholesterol": "0",
+                                "sodium": "270",
+                                "totalCarbohydrates": "12",
+                                "dietaryFiber": "less than 1",
+                                "sugars": "0",
+                                "protein": "1",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "0.00",
+                                "iron": "0.00",
+                                "saturatedFat": "1.5",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Bacon",
+                            "description": "Crisp, lightly smoked bacon strips",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": "2",
+                                "servingUnit": "slice",
+                                "calories": "110",
+                                "caloriesFromFat": "0",
+                                "totalFat": "9",
+                                "transFat": "0",
+                                "cholesterol": "25",
+                                "sodium": "360",
+                                "totalCarbohydrates": "less than 1",
+                                "dietaryFiber": "0",
+                                "sugars": "less than 1",
+                                "protein": "7",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "9.30",
+                                "iron": "0.40",
+                                "saturatedFat": "3",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "station": "Bakery",
+            "menu": [
+                {
+                    "category": "Breads",
+                    "items": [
+                        {
+                            "name": "Blueberry Scone",
+                            "description": "",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": false,
+                                "servingSize": null,
+                                "servingUnit": null,
+                                "calories": null,
+                                "caloriesFromFat": null,
+                                "totalFat": null,
+                                "transFat": null,
+                                "cholesterol": null,
+                                "sodium": null,
+                                "totalCarbohydrates": null,
+                                "dietaryFiber": null,
+                                "sugars": null,
+                                "protein": null,
+                                "vitaminA": null,
+                                "vitaminC": null,
+                                "calcium": null,
+                                "iron": null,
+                                "saturatedFat": null,
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        },
+                        {
+                            "name": "Chocolate Donut Bites",
+                            "description": "Freshly baked donut bites coated with cocoa and powdered sugar",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "4",
+                                "servingUnit": "each",
+                                "calories": "210",
+                                "caloriesFromFat": "110",
+                                "totalFat": "12",
+                                "transFat": "0",
+                                "cholesterol": "10",
+                                "sodium": "300",
+                                "totalCarbohydrates": "25",
+                                "dietaryFiber": "less than 1",
+                                "sugars": "11",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": "0.01",
+                                "calcium": "7.54",
+                                "iron": "1.23",
+                                "saturatedFat": "6",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                },
+                {
+                    "category": "Desserts",
+                    "items": [
+                        {
+                            "name": "Chocolate Chip Crumb Cupcake",
+                            "description": "Freshly baked coffee cake with semisweet chocolate chips and streusel crumb topping",
+                            "nutrition": {
+                                "isVegan": false,
+                                "isVegetarian": true,
+                                "servingSize": "1",
+                                "servingUnit": "each",
+                                "calories": "190",
+                                "caloriesFromFat": "60",
+                                "totalFat": "6",
+                                "transFat": "0",
+                                "cholesterol": "5",
+                                "sodium": "180",
+                                "totalCarbohydrates": "33",
+                                "dietaryFiber": "1",
+                                "sugars": "20",
+                                "protein": "2",
+                                "vitaminA": null,
+                                "vitaminC": "0.00",
+                                "calcium": "1.86",
+                                "iron": "0.90",
+                                "saturatedFat": "3.5",
+                                "isEatWell": false,
+                                "isPlantForward": false,
+                                "isWholeGrain": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

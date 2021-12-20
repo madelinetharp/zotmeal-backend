@@ -5,6 +5,7 @@ Scripts
 Lib
 pyvenv.cfg
 
+.idea
 __pycache__
 *.json
 .vercel

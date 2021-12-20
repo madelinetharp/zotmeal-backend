@@ -1,6 +1,21 @@
 {
     "refreshTime": 1639808216,
     "restaurant": "Sample",
+    "timePeriod": {
+    	"Breakfast": {
+	    "start": 700,
+    	    "end"  : 1100
+	}
+	"Lunch": {
+	    "start": 1100,
+	    "end"  : 1630
+	}
+	"Dinner": {
+	    "start": 1630,
+	    "end"  : 2000
+	}
+    },
+
     "all": [
         {
             "station": "The Farm Stand / Salad Bar",
