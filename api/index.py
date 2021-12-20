@@ -1,11 +1,13 @@
-from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
-import json#imported to format dict as json string
-import urllib.parse, urllib.request #imported to get site contents from internet
-import time#imported to get timestamp
-import traceback#for error handling
+from http.server import BaseHTTPRequestHandler
+import json
+import urllib.parse, urllib.request
+import time
+import traceback
 import os
 from datetime import datetime
 from collections import defaultdict
+from .Location import scrape_menu_to_dict
+
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
@@ -35,140 +37,6 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
-def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
-    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
-    local_time = time.gmtime(time.time() - 28800)
-    return local_time.tm_hour, local_time.tm_min
-
-def get_current_meal():
-    '''Return meal code for current time of the day'''
-    local_time = time.gmtime(time.time() - 28800)
-    now = int(f'{local_time.tm_hour}{local_time.tm_min}')
-    
-    breakfast   = 0000
-    lunch       = 1100
-    dinner      = 1630
-    
-    # After 16:30, Dinner, Meal-Code: 2
-    if now >= dinner:
-        return 2
-
-    # After 11:00 Weekend, Brunch, Meal-Code: 3
-    if now >= lunch and local_time.tm_wday >= 5:
-        return 3
-
-    # After 11:00 Weekday, Lunch, Meal-Code: 1
-    if now >= lunch:
-        return 1
-
-    # After 00:00, Breakfast, Meal-Code: 0
-    if now >= breakfast:
-        return 0
-
-brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
-eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
-
-url_dict = {
-    "Brandywine"    : brandy_info,
-    "brandywine"    : brandy_info,
-    "TheAnteatery"  : eatery_info,
-    "Anteatery"     : eatery_info,
-    "anteatery"     : eatery_info
-}
-
-meal_ids = {
-    0: 49,#breakfast
-    1: 106,#lunch
-    2: 107,#dinner
-    3: 2651#brunch (on weekends)
-}
-
-def uncapitalize_first_letter(s: str) -> str:
-    return s[0].lower()+s[1:]
-
-def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
-    '''Given a location of a cafeteria, get the corresponding JSON information and 
-    return a Python dictionary of the relevant components'''
-    weekday = datetime.strptime(date,"%m/%d/%Y").weekday()
-    if weekday > 4 and meal_id == 1:
-        meal_id=3
-    
-    restaurant, url = url_dict[location]
-
-    if meal_id is None:
-        meal_id = get_current_meal()
-
-    if date is None:
-        date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
-
-    url += f"&periodId={meal_ids[meal_id]}&date={date}"
-    r = urllib.request.urlopen(url)
-    data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
-    menu_data = data["Menu"]
-    
-    final_dict = {
-        'refreshTime'   : int(time.time()),
-        'restaurant'    : restaurant,
-        'all'           : [],
-    }
-
-    intermediate_dict = defaultdict(lambda: defaultdict(lambda: []))
-
-    stations_list = menu_data["MenuStations"]
-    station_id_to_name = dict([(entry['StationId'], entry['Name']) for entry in stations_list])
-
-    products_list = menu_data["MenuProducts"]
-
-    PROPERTIES = [
-    "IsVegan",
-    "IsVegetarian",
-    "ServingSize",
-    "ServingUnit",
-    "Calories",
-    "CaloriesFromFat",
-    "TotalFat",
-    "TransFat",
-    "Cholesterol",
-    "Sodium",
-    "TotalCarbohydrates",
-    "DietaryFiber",
-    "Sugars",
-    "Protein",
-    "VitaminA",
-    "VitaminC",
-    "Calcium",
-    "Iron",
-    "SaturatedFat"]
-
-    def _find_icon(icon_property, food_info):
-        return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
-
-    for entry in products_list:
-        details = entry["Product"]
-        station_name = station_id_to_name[entry["StationId"]].replace("/ "," / ")
-        category_name = details["Categories"][0]["DisplayName"]
-
-        item_dict = {
-            'name'          : details['MarketingName'],
-            'description'   : details['ShortDescription'],
-            'nutrition'     : dict([(uncapitalize_first_letter(key), details[key]) for key in PROPERTIES]) | 
-                {
-                'isEatWell'       : _find_icon('EatWell', details),
-                'isPlantForward'  : _find_icon('PlantForward', details),
-                'isWholeGrain'    : _find_icon('WholeGrain', details),
-                },
-        }
-
-        intermediate_dict[station_name][category_name].append(item_dict)
-    
-    for station_name in intermediate_dict.keys():
-
-        final_dict["all"].append({
-        'station'   : station_name, 
-        'menu'      : [{'category': category, 'items': items} for category, items in intermediate_dict[station_name].items()]
-        })
-
-    return final_dict
 
 #brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 #anteatery examples:
@@ -179,6 +47,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
 
 class InvalidQueryException(Exception):
     pass
+
 class NotFoundException(Exception):
     pass
 
@@ -232,11 +101,13 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
             #json.dump(data,self.wfile,ensure_ascii=False) #TODO: this clean solution doesn't work for some reason. says bytes-like is required, not str. figure out why
             self.wfile.write(json.dumps(data,ensure_ascii=False).encode())
+
         except NotFoundException:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
             self.end_headers()
             self.wfile.write("Invalid path. The only one available is /api".encode())
+
         except Exception as e:
             traceback.print_exc()
             self.send_response(500)
