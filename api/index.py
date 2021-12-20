@@ -8,6 +8,9 @@ from collections import defaultdict
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
+def get_irvine_time() -> time.struct_time:#tuple of two ints for hours and minutes
+    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
+    return time.gmtime(time.time() - 28800)
 
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
@@ -29,15 +32,12 @@ if USE_CACHE:
             meal = get_current_meal()
 
         if date is None:
-            date = time.strftime("%m/%d/%Y")
+            irvine_time = get_irvine_time()
+            date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
 
         modified_datestring = date.replace("/","|")
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
-
-def get_irvine_time() -> time.struct_time:#tuple of two ints for hours and minutes
-    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
-    return time.gmtime(time.time() - 28800)
 
 def get_current_meal():
     '''Return meal code for current time of the day'''
