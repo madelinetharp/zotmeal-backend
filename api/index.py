@@ -6,46 +6,23 @@ import traceback#for error handling
 import os
 from datetime import datetime
 from collections import defaultdict
-import requests
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
 brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314&periodId={meal_param}&date={data_param}".format)
 eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&periodId={meal_param}&date={data_param}".format)
 
-ALL_LOCATIONS = {
+url_dict = {
     "brandywine"    : brandy_info,
     "anteatery"     : eatery_info
 }
 
-MEAL_IDS = {
+meal_ids = {
     0: 49,
     1: 106,
     2: 107,
     3: 2651
 }
-
-PROPERTIES = (
-    "IsVegan",
-    "IsVegetarian",
-    "ServingSize",
-    "ServingUnit",
-    "Calories",
-    "CaloriesFromFat",
-    "TotalFat",
-    "TransFat",
-    "Cholesterol",
-    "Sodium",
-    "TotalCarbohydrates",
-    "DietaryFiber",
-    "Sugars",
-    "Protein",
-    "VitaminA",
-    "VitaminC",
-    "Calcium",
-    "Iron",
-    "SaturatedFat"
-)
 
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
@@ -73,6 +50,10 @@ if USE_CACHE:
         return db.reference(f"{location}/{modified_datestring}/{meal}")
         #for the returned reference, get() returns None when there's nothing created at that path.
 
+def get_irvine_time() -> tuple:#tuple of two ints for hours and minutes
+    '''Return current time in Irvine, PST, by subtracing 8 hours (in seconds) from GMT'''
+    local_time = time.gmtime(time.time() - 28800)
+    return local_time.tm_hour, local_time.tm_min
 
 def get_current_meal():
     '''Return meal code for current time of the day'''
@@ -99,16 +80,14 @@ def get_current_meal():
     if now >= breakfast:
         return 0
 
-
 def uncapitalize_first_letter(s: str) -> str:
     return s[0].lower()+s[1:]
-
 
 def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) -> dict:
     '''Given a location of a cafeteria, get the corresponding JSON information and 
     return a Python dictionary of the relevant components'''
     
-    restaurant, url = ALL_LOCATIONS[location]
+    restaurant, url = url_dict[location]
 
     if meal_id is None:
         meal_id = get_current_meal()
@@ -116,8 +95,9 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     if date is None:
         date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
 
-    url = url(meal_param = MEAL_IDS[meal_id], data_param = date)
-    data = requests.get(url).json()
+    url += f"&periodId={meal_ids[meal_id]}&date={date}"
+    r = urllib.request.urlopen(url)
+    data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
     menu_data = data["Menu"]
     
     final_dict = {
@@ -133,6 +113,26 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
 
     products_list = menu_data["MenuProducts"]
 
+    PROPERTIES = [
+    "IsVegan",
+    "IsVegetarian",
+    "ServingSize",
+    "ServingUnit",
+    "Calories",
+    "CaloriesFromFat",
+    "TotalFat",
+    "TransFat",
+    "Cholesterol",
+    "Sodium",
+    "TotalCarbohydrates",
+    "DietaryFiber",
+    "Sugars",
+    "Protein",
+    "VitaminA",
+    "VitaminC",
+    "Calcium",
+    "Iron",
+    "SaturatedFat"]
 
     def _find_icon(icon_property, food_info):
         return any(map(lambda diet_info: icon_property in diet_info["IconUrl"], food_info["DietaryInformation"]))
