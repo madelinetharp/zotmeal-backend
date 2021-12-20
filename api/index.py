@@ -228,7 +228,7 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Content-type','application/json')
             self.end_headers()
             #json.dump(data,self.wfile,ensure_ascii=False) #TODO: this clean solution doesn't work for some reason. says bytes-like is required, not str. figure out why
-            self.wfile.write(json.dumps(data,ensure_ascii=False).encode())
+            self.wfile.write(json.dumps(data,ensure_ascii=False, indent = 4).encode())
         except NotFoundException:
             self.send_response(404)
             self.send_header('Content-type','text/plain')
