@@ -5,76 +5,11 @@ import time#imported to get timestamp
 import traceback#for error handling
 import os#imported to get environment variables
 from collections import defaultdict
-import requests 
-from .helpers import *
+from .helpers import * #local file
+import location_management #local file
 
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
-
-
-# Class to store general information, queries, and perform operations on them
-class LocationManager:
-    MENU_QUERY      = 'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&periodId={meal_param}&date={date_param}'.format
-    SCHEDULE_QUERY  = 'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location_param}&date={date_param}'.format 
-
-    LOCATION_INFO   = {
-        'brandywine': {
-            'official'  : 'Brandywine',
-            'id'        : 3314,
-        },
-
-        'anteatery': {
-            'official'  : 'Anteatery',
-            'id'        : 3056,
-        }
-    }
-
-    def __init__(self):
-        pass
-
-    # TODO: make location validater and resolver more robust/accurate; maybe create a __check_alias upon not-immediate match
-    def is_valid_location(self, location: str) -> bool:
-        'Check if the location is valid'
-        if location in self.LOCATION_INFO:
-            return True
-        return False
-
-    def resolve_location(self, location: str) -> bool:
-        '''
-        Assuming the location is a valid alias,
-        resolve the location to a key in the ALL_LOCATIONS dict
-        '''
-        return location.lower()
-
-    def get_name(self, location: str):
-        'Assuming valid location is provided, return the official name for diner'
-        return self.LOCATION_INFO[location]['official']
-
-    def get_id(self, location: str) -> int:
-        'Assuming valid location is provided, return id for diner'
-        return self.LOCATION_INFO[location]['id']
-    
-    def get_menu_data(self, location, meal_id, date):
-        '''
-        Given a valid location, meal_id, and date,
-        perform get request for the diner_json and return the dict at diner_json['Menu']
-        '''
-        return requests.get(
-                self.MENU_QUERY(location_param = self.get_id(location), meal_param = meal_id, date_param = date)
-                ).json()['Menu']
-    
-    def get_schedule_json(self, location, date):
-        '''
-        Given a valid location and date,
-        perform get request for the schedule_json
-        '''
-        return requests.get(
-                self.SCHEDULE_QUERY(location_param = self.get_id(location), date_param = date)
-                ).json()['Result']
-
-
-# Initialize a location manager
-GLOBAL_LOCATION_MANAGER = LocationManager()
 
 # Default opening and closing times
 # TODO: Might implement a class to determine default open/close depending on day
@@ -208,7 +143,7 @@ def extract_schedule(location: str, date: str) -> dict:
     Given a location and a date as a string, perform a get request for that date's schedule,
     return a dict of the meal periods
     '''
-    schedule_json = GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date)
+    schedule_json = location_management.get_schedule_json(location, date)
     meal_periods = dict([
         (
             _lower_first_letter(meal['PeriodName']), 
@@ -230,7 +165,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     if date is None:
         date = time.strftime('%m/%d/%Y')
 
-    restaurant  = GLOBAL_LOCATION_MANAGER.get_name(location)
+    restaurant  = location_management.get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
     currentMeal = _lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
@@ -244,7 +179,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'all'           : foodItems,
     }
 
-    menu_data = GLOBAL_LOCATION_MANAGER.get_menu_data(location, meal_id, date)
+    menu_data = location_management.get_menu_data(location, meal_id, date)
 
     station_dict = extract_menu(
                     station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),
@@ -279,13 +214,13 @@ class NotFoundException(Exception):
 
 class handler(BaseHTTPRequestHandler):
 
-    def process_response(self, status_code: int, headers: tuple, data) -> None:
+    def process_response(self, status_code: int, header: tuple, data) -> None:
         ''' 
-        Given a status_code, headers, and data, forward the information to the client
+        Given a status_code, header, and data, forward the information to the client
         '''
 
         self.send_response(status_code)
-        self.send_header(*headers)
+        self.send_header(*header)
         self.end_headers()
         self.wfile.write(data.encode())
 
@@ -317,8 +252,8 @@ class handler(BaseHTTPRequestHandler):
         
         location = query['location'][0]
 
-        if not GLOBAL_LOCATION_MANAGER.is_valid_location(location):
-            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(LocationManager.LOCATION_INFO.keys())}')
+        if not location_management.is_valid_location(location):
+            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(location_management.LOCATION_INFO.keys())}')
 
         return location
 
@@ -329,17 +264,9 @@ class handler(BaseHTTPRequestHandler):
         invalid : raise InvalidQueryException
         '''
 
-        if 'meal' in query:
-            meal = int(query['meal'][0])
+        meal = int(query['meal'][0]) if 'meal' in query else None
 
-        else:
-            meal = None
-
-        if 'date' in query:
-            date = query['date'][0] # note: data gets decoded by urllib, so it will contain slashes.
-
-        else:
-            date = None
+        date = query['date'][0] if 'date' in query else None # note: data gets decoded by urllib, so it will contain slashes.
 
         if meal is None and not date is None:
             raise InvalidQueryException('You can\'t provide the date without the meal (not implemented in the server).')
@@ -373,21 +300,21 @@ class handler(BaseHTTPRequestHandler):
                     
             self.process_response(
                     status_code = 200, 
-                    headers     = ('Content-type', 'application/json'), 
+                    header     = ('Content-type', 'application/json'), 
                     data        = json.dumps(data, ensure_ascii = False, indent = 4)
             )
 
         except NotFoundException:
             self.process_response(
                     status_code = 404, 
-                    headers     = ('Content-type', 'text/plain'), 
+                    header     = ('Content-type', 'text/plain'), 
                     data        = 'Invalid path. The only one available is /api'
             )
 
         except InvalidQueryException as e:
             self.process_response(
                 status_code = 400, 
-                headers     = ('Content-type', 'text/plain'), 
+                header     = ('Content-type', 'text/plain'), 
                 data        = f'Invalid query parameters. Details: {e}'
         )
             
@@ -395,7 +322,7 @@ class handler(BaseHTTPRequestHandler):
             traceback.print_exc()
             self.process_response(
                     status_code = 500, 
-                    headers     = ('Content-type', 'text/plain'), 
+                    header     = ('Content-type', 'text/plain'), 
                     data        = f'Internal Server Error. Raise an issue on the github repo: https://github.com/EricPedley/zotmeal-backend. Details: {e}'
             )
 
