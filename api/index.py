@@ -1,6 +1,6 @@
 from http.server import BaseHTTPRequestHandler#imported to have an http endpoint
 import json#imported to format dict as json string
-import urllib.parse, urllib.request #imported to get site contents from internet
+import urllib.parse #imported to help parsing url componenets
 import time#imported to get timestamp
 import traceback#for error handling
 import os#imported to get environment variables
