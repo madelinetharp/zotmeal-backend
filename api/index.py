@@ -80,6 +80,7 @@ class LocationManager:
 GLOBAL_LOCATION_MANAGER = LocationManager()
 
 # Default opening and closing times
+# TODO: Might implement a class to determine default open/close depending on day
 DEFAULT_OPEN    = 715
 DEFAULT_CLOSE   = 2200
 
@@ -109,12 +110,14 @@ PROPERTIES = (
     'SaturatedFat'
 )
 
-# MEAL ID to PERIOD ID aliases
+# MEAL ID > (PERIOD ID, MEAL NAME)
+# meals can be referred to by their id or period id alias
+# TODO: there might be a better way to implement this
 MEAL_TO_PERIOD = {
-    0: 49,     # Breakfast
-    1: 106,    # Lunch
-    2: 107,    # Dinner
-    3: 2651    # Brunch
+    0: (49, 'Breakfast'),
+    1: (106, 'Lunch'),
+    2: (107, 'Dinner'),
+    3: (2651, 'Brunch')
 }
 
 USE_CACHE = bool(os.getenv("USE_CACHE"))
@@ -267,20 +270,20 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     if date is None:
         date = time.strftime('%m/%d/%Y')
 
-    name        = GLOBAL_LOCATION_MANAGER.get_name(location)
+    restaurant  = GLOBAL_LOCATION_MANAGER.get_name(location)
+    refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
-
-    if not schedule:
-        isOpen = False
-    else:
-        isOpen = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
+    isOpen      = schedule and check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
+    currentMeal = MEAL_TO_PERIOD[meal_id][1]
+    foodItems   = []
 
     diner_json = {
-        'restaurant'    : name,
-        'refreshTime'   : int(time.time()),
-        'isOpen'        : isOpen,
+        'restaurant'    : restaurant,
+        'refreshTime'   : refreshTime,
         'schedule'      : schedule,
-        'all'           : [],
+        'isOpen'        : isOpen,
+        'currentMeal'   : currentMeal,
+        'all'           : foodItems,
     }
 
     menu_data = GLOBAL_LOCATION_MANAGER.get_menu_data(location, meal_id, date)
