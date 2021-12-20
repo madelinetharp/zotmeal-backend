@@ -5,8 +5,8 @@ import time#imported to get timestamp
 import traceback#for error handling
 import os#imported to get environment variables
 from collections import defaultdict
-from helpers import * #local file
-import location_management #local file
+from api.helpers import * #local file
+import api.location_management as location_management#local file
 
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
