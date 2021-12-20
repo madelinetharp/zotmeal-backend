@@ -120,7 +120,7 @@ MEAL_TO_PERIOD = {
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
 print("Using cache" if USE_CACHE else "Not using cache")
-
+USE_CACHE = false
 if USE_CACHE:
     #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
     import firebase_admin#https://firebase.google.com/docs/database/admin/start
@@ -268,10 +268,10 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     isOpen      = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
 
     diner_json = {
+        'restaurant'    : name,
         'refreshTime'   : int(time.time()),
         'isOpen'        : isOpen,
-        'schedule'      : GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date),
-        'restaurant'    : name,
+        'schedule'      : schedule,
         'all'           : [],
     }
 
