@@ -21,13 +21,11 @@ class LocationManager:
         'brandywine': {
             'official'  : 'Brandywine',
             'id'        : 3314,
-            'aliases'   : [],
         },
 
         'anteatery': {
             'official'  : 'Anteatery',
             'id'        : 3056,
-            'aliases'   : [],
         }
     }
 
@@ -36,7 +34,7 @@ class LocationManager:
 
     # TODO: make location validater and resolver more robust/accurate; maybe create a __check_alias upon not-immediate match
     def is_valid_location(self, location: str) -> bool:
-        'Check if the location is valid, including aliases'
+        'Check if the location is valid'
         if location in self.LOCATION_INFO:
             return True
         return False
@@ -360,7 +358,7 @@ class handler(BaseHTTPRequestHandler):
         location = query['location'][0]
 
         if not GLOBAL_LOCATION_MANAGER.is_valid_location(location):
-            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(ALL_LOCATIONS.keys())}')
+            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(LocationManager.LOCATION_INFO.keys())}')
 
         return location
 
