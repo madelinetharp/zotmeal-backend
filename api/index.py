@@ -264,12 +264,13 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     if date is None:
         date = time.strftime('%m/%d/%Y')
 
-    schedule = extract_schedule(location, date)
+    schedule    = extract_schedule(location, date)
+    isOpen      = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
 
     diner_json = {
         'refreshTime'   : int(time.time()),
         'restaurant'    : GLOBAL_LOCATION_MANAGER.get_name(location),
-        'isOpen'        : check_open(schedule['Breakfast']['start'], schedule['Dinner']['end']),
+        'isOpen'        : isOpen,
         'schedule'      : schedule,
         'all'           : [],
     }
