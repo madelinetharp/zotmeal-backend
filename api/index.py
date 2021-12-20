@@ -165,14 +165,14 @@ def _read_schedule_UTC(utc_time: str) -> int:
     convert struct to seconds since epoch, subtract 8 hours, and normalize to
     '''
     gmt_struct = time.strptime(utc_time, '%Y-%m-%dT%H:%M:%S.0000000')
-    local_struct = time.gmtime(calendar.timegm(gmt_struct) - IRVINE_OFFSET)
+    local_struct = time.gmtime(calendar.timegm(gmt_struct) + IRVINE_OFFSET)
     return _normalize_time(local_struct)
 
 
 # Basic Operations
 def get_irvine_time():
     'Return the local time in normalized format'
-    local_time = time.gmtime(time.time() - IRVINE_OFFSET)
+    local_time = time.gmtime(time.time() + IRVINE_OFFSET)
     return _normalize_time(local_time)
 
 def check_open(breakfast_start: int = DEFAULT_OPEN, dinner_end: int = DEFAULT_CLOSE, time=None):
@@ -243,6 +243,7 @@ def extract_schedule(location: str, date: str) -> dict:
     '''
     schedule_json = GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date)
     
+    print(schedule_json)
     meal_periods = dict([
         (
             meal['PeriodName'], 
