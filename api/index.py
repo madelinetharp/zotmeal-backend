@@ -120,7 +120,7 @@ MEAL_TO_PERIOD = {
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
 print("Using cache" if USE_CACHE else "Not using cache")
-USE_CACHE = false
+USE_CACHE = False
 if USE_CACHE:
     #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
     import firebase_admin#https://firebase.google.com/docs/database/admin/start
