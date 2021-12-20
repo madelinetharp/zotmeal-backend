@@ -1,4 +1,9 @@
 import time
+import calendar
+
+# Default offset for Irvine from GMT (GMT-8 = -28800 seconds)
+IRVINE_OFFSET = -28800
+
 # Helper functions
 def _lower_first_letter(s: str) -> str:
     'Lowercase the first letter of a string'
@@ -20,3 +25,8 @@ def _read_schedule_UTC(utc_time: str) -> int:
     gmt_struct = time.strptime(utc_time, '%Y-%m-%dT%H:%M:%S.0000000')
     local_struct = time.gmtime(calendar.timegm(gmt_struct) + IRVINE_OFFSET)
     return _normalize_time(local_struct)
+
+def _get_irvine_time():
+    'Return the local time in normalized format'
+    local_time = time.gmtime(time.time() + IRVINE_OFFSET)
+    return local_time

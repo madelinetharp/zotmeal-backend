@@ -81,8 +81,6 @@ GLOBAL_LOCATION_MANAGER = LocationManager()
 DEFAULT_OPEN    = 715
 DEFAULT_CLOSE   = 2200
 
-# Default offset for Irvine from GMT (GMT-8 = -28000 seconds)
-IRVINE_OFFSET = -28800
 
 # Relevant Nutrition Properties
 PROPERTIES = (
@@ -141,7 +139,7 @@ if USE_CACHE:
             meal = get_current_meal()
 
         if date is None:
-            irvine_time = get_irvine_time()
+            irvine_time = _get_irvine_time()
             date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
 
         modified_datestring = date.replace("/","|")
@@ -149,27 +147,12 @@ if USE_CACHE:
         # .get() returns None if nothing created
         return db.reference(f"{location}/{modified_datestring}/{meal}")
 
-
-
-
-# Basic Operations
-def get_irvine_time():
-    'Return the local time in normalized format'
-    local_time = time.gmtime(time.time() + IRVINE_OFFSET)
-    return local_time
-
-def check_open(breakfast_start: int = DEFAULT_OPEN, dinner_end: int = DEFAULT_CLOSE, time=None):
-    'Given the start time for breakfast and end time for dinner, return true if the diner is open'
-    if time is None:
-        time = get_irvine_time()
-    return time in range(breakfast_start, dinner_end)
-
 def get_current_meal():
     '''
     Return meal code for current time of the day
     Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
     '''
-    irvine_time = get_irvine_time()
+    irvine_time = _get_irvine_time()
     now = _normalize_time(irvine_time)
 
     breakfast   = 0000
