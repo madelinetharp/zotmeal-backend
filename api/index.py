@@ -1,11 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
-import urllib.parse, urllib.request
-import time
 import traceback
 import os
-from datetime import datetime
-from collections import defaultdict
 from .Location import scrape_menu_to_dict
 
 #anteatery 01/14/2022 breakfast
