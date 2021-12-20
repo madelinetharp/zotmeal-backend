@@ -21,13 +21,11 @@ class LocationManager:
         'brandywine': {
             'official'  : 'Brandywine',
             'id'        : 3314,
-            'aliases'   : [],
         },
 
         'anteatery': {
             'official'  : 'Anteatery',
             'id'        : 3056,
-            'aliases'   : [],
         }
     }
 
@@ -36,7 +34,7 @@ class LocationManager:
 
     # TODO: make location validater and resolver more robust/accurate; maybe create a __check_alias upon not-immediate match
     def is_valid_location(self, location: str) -> bool:
-        'Check if the location is valid, including aliases'
+        'Check if the location is valid'
         if location in self.LOCATION_INFO:
             return True
         return False
@@ -251,7 +249,7 @@ def extract_schedule(location: str, date: str) -> dict:
     schedule_json = GLOBAL_LOCATION_MANAGER.get_schedule_json(location, date)
     meal_periods = dict([
         (
-            meal['PeriodName'], 
+            _lower_first_letter(meal['PeriodName']), 
             {
                 'start' : _read_schedule_UTC(meal['UtcMealPeriodStartTime']),
                 'end'   : _read_schedule_UTC(meal['UtcMealPeriodEndTime']),
@@ -273,15 +271,13 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     restaurant  = GLOBAL_LOCATION_MANAGER.get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
-    isOpen      = schedule and check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
-    currentMeal = MEAL_TO_PERIOD[meal_id][1]
+    currentMeal = _lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
     foodItems   = []
 
     diner_json = {
         'restaurant'    : restaurant,
         'refreshTime'   : refreshTime,
         'schedule'      : schedule,
-        'isOpen'        : isOpen,
         'currentMeal'   : currentMeal,
         'all'           : foodItems,
     }
@@ -360,7 +356,7 @@ class handler(BaseHTTPRequestHandler):
         location = query['location'][0]
 
         if not GLOBAL_LOCATION_MANAGER.is_valid_location(location):
-            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(ALL_LOCATIONS.keys())}')
+            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(LocationManager.LOCATION_INFO.keys())}')
 
         return location
 
