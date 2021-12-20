@@ -120,7 +120,11 @@ MEAL_TO_PERIOD = {
 USE_CACHE = bool(os.getenv("USE_CACHE"))
 
 print("Using cache" if USE_CACHE else "Not using cache")
+
+# TODO: need to clear Firebase cache of outdated JSONS, should probably implement timer
+# e.g. force refresh of cache every hour
 USE_CACHE = False
+
 if USE_CACHE:
     #ideally this firebase stuff would be in a separate file but idk how to get vercel to let me import my own files into eachother
     import firebase_admin#https://firebase.google.com/docs/database/admin/start
@@ -265,7 +269,11 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
 
     name        = GLOBAL_LOCATION_MANAGER.get_name(location)
     schedule    = extract_schedule(location, date)
-    isOpen      = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
+
+    if not schedule:
+        isOpen = False
+    else:
+        isOpen = check_open(schedule['Breakfast']['start'], schedule['Dinner']['end'])
 
     diner_json = {
         'restaurant'    : name,
