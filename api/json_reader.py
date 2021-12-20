@@ -1,8 +1,12 @@
-from . import location_management
 from .CONSTANTS import MEAL_TO_PERIOD, PROPERTIES
-from .helpers import *
 from collections import defaultdict
 import time
+
+from .helpers import lower_first_letter, find_icon, normalize_time, \
+        read_schedule_UTC, get_irvine_time, get_current_meal
+
+from .location_management import is_valid_location, get_name, \
+        get_id, get_menu_data, get_schedule_data
 
 def extract_menu(products_list, station_id_to_name):
     '''
@@ -35,7 +39,7 @@ def extract_schedule(location: str, date: str) -> dict:
     Given a location and a date as a string, perform a get request for that date's schedule,
     return a dict of the meal periods
     '''
-    schedule_json = location_management.get_schedule_json(location, date)
+    schedule_json = get_schedule_data(location, date)
     meal_periods = dict([
         (
             lower_first_letter(meal['PeriodName']), 
@@ -57,7 +61,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     if date is None:
         date = time.strftime('%m/%d/%Y')
 
-    restaurant  = location_management.get_name(location)
+    restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
     currentMeal = lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
@@ -71,7 +75,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'all'           : foodItems,
     }
 
-    menu_data = location_management.get_menu_data(location, meal_id, date)
+    menu_data = get_menu_data(location, meal_id, date)
 
     station_dict = extract_menu(
                     station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),

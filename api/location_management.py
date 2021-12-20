@@ -26,7 +26,7 @@ def get_menu_data(location, meal_id, date):
                 meal_param = meal_id, date_param = date)
             ).json()['Menu']
 
-def get_schedule_json(location, date):
+def get_schedule_data(location, date):
     '''
     Given a valid location and date,
     perform get request for the schedule_json
