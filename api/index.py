@@ -9,11 +9,14 @@ from collections import defaultdict
 #anteatery 01/14/2022 breakfast
 #https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
-brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314&periodId={meal_param}&date={data_param}".format)
-eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&periodId={meal_param}&date={data_param}".format)
+brandy_info = ("Brandywine", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3314")
+eatery_info = ("Anteatery", "https://uci.campusdish.com/api/menu/GetMenus?locationId=3056")
 
 url_dict = {
+    "Brandywine"    : brandy_info,
     "brandywine"    : brandy_info,
+    "TheAnteatery"  : eatery_info,
+    "Anteatery"     : eatery_info,
     "anteatery"     : eatery_info
 }
 
