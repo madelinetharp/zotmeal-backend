@@ -35,7 +35,7 @@ PROPERTIES = (
 )
 
 
-url_dict = {
+ALL_LOCATIONS = {
     "Brandywine"    : brandy_info,
     "brandywine"    : brandy_info,
     "TheAnteatery"  : eatery_info,
@@ -43,7 +43,7 @@ url_dict = {
     "anteatery"     : eatery_info
 }
 
-meal_ids = {
+MEAL_IDS = {
     0: 49,
     1: 106,
     2: 107,
@@ -113,7 +113,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     '''Given a location of a cafeteria, get the corresponding JSON information and 
     return a Python dictionary of the relevant components'''
     
-    restaurant, url = url_dict[location]
+    restaurant, url = ALL_LOCATIONS[location]
 
     if meal_id is None:
         meal_id = get_current_meal()
@@ -121,7 +121,7 @@ def scrape_menu_to_dict(location: str, meal_id: int = None, date: str = None) ->
     if date is None:
         date = time.strftime("%m/%d/%Y")#urllib quote URL-encodes the slashes
 
-    url += f"&periodId={meal_ids[meal_id]}&date={date}"
+    url += f"&periodId={MEAL_IDS[meal_id]}&date={date}"
     r = urllib.request.urlopen(url)
     data = json.loads(r.read().decode(r.info().get_param('charset') or 'utf-8'))
     menu_data = data["Menu"]
