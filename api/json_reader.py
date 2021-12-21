@@ -47,7 +47,6 @@ def extract_schedule(location: str, date: str) -> dict:
             {
                 'start' : read_schedule_UTC(meal['UtcMealPeriodStartTime']),
                 'end'   : read_schedule_UTC(meal['UtcMealPeriodEndTime']),
-                'price' : DEFAULT_PRICES[lower_first_letter(meal['PeriodName'])],
             }
         ) for meal in schedule_json])
 
@@ -74,6 +73,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'refreshTime'   : refreshTime,
         'schedule'      : schedule,
         'currentMeal'   : currentMeal,
+        'price'         : DEFAULT_PRICES,
         'all'           : foodItems,
     }
 
