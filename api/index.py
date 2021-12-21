@@ -3,7 +3,7 @@ import json#imported to format dict as json string
 import urllib.parse #imported to help parsing url componenets
 import traceback#for error handling
 import os#imported to get environment variables
-from .location_management import is_valid_location
+from .location_management import is_valid_location, LOCATION_INFO
 from .json_reader import get_diner_json
 
 
@@ -69,7 +69,7 @@ class handler(BaseHTTPRequestHandler):
         location = query['location'][0]
 
         if not is_valid_location(location):
-            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(location_management.LOCATION_INFO.keys())}')
+            raise InvalidQueryException(f'The location specified is not valid. Valid locations: {list(LOCATION_INFO.keys())}')
 
         return location
 
