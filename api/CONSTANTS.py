@@ -8,7 +8,11 @@
 # (10/15/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F15%2F2021
 # (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
 
-LOCATION_INFO   = {
+# request URLS bound to the .format method
+MENU_REQUEST      = 'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&periodId={meal_param}&date={date_param}'.format
+SCHEDULE_REQUEST  = 'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location_param}&date={date_param}'.format
+
+LOCATION_INFO = {
     'brandywine': {
         'official'  : 'Brandywine',
         'id'        : 3314,
@@ -18,6 +22,13 @@ LOCATION_INFO   = {
         'official'  : 'Anteatery',
         'id'        : 3056,
     }
+}
+
+DEFAULT_PRICES = {
+    'breakfast' : 9.75,
+    'lunch'     : 13.75,
+    'brunch'    : 13.75,
+    'dinner'    : 14.95
 }
 
 # Default opening and closing times

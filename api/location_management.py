@@ -1,4 +1,4 @@
-from .CONSTANTS import LOCATION_INFO
+from .CONSTANTS import LOCATION_INFO, MENU_REQUEST, SCHEDULE_REQUEST
 import requests
 
 def is_valid_location(location: str) -> bool:
@@ -21,9 +21,10 @@ def get_menu_data(location, meal_id, date):
     perform get request for the diner_json and return the dict at diner_json['Menu']
     '''
     return requests.get(
-            'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&periodId={meal_param}&date={date_param}'.format(
-                location_param = get_id(location), 
-                meal_param = meal_id, date_param = date)
+            MENU_REQUEST(
+                location_param  = get_id(location), 
+                meal_param      = meal_id,
+                date_param      = date)
             ).json()['Menu']
 
 def get_schedule_data(location, date):
@@ -32,7 +33,7 @@ def get_schedule_data(location, date):
     perform get request for the schedule_json
     '''
     return requests.get(
-            'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location_param}&date={date_param}'.format(
-                location_param = get_id(location), 
-                date_param = date)
+            SCHEDULE_REQUEST(
+                location_param  = get_id(location), 
+                date_param      = date)
             ).json()['Result']

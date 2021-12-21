@@ -1,4 +1,4 @@
-from .CONSTANTS import MEAL_TO_PERIOD, PROPERTIES
+from .CONSTANTS import MEAL_TO_PERIOD, PROPERTIES, DEFAULT_PRICES
 from collections import defaultdict
 import time
 
@@ -42,10 +42,12 @@ def extract_schedule(location: str, date: str) -> dict:
     schedule_json = get_schedule_data(location, date)
     meal_periods = dict([
         (
+            # this is the meal, e.g. 'breakfast', which will map to a dict of start/end time and price
             lower_first_letter(meal['PeriodName']), 
             {
                 'start' : read_schedule_UTC(meal['UtcMealPeriodStartTime']),
                 'end'   : read_schedule_UTC(meal['UtcMealPeriodEndTime']),
+                'price' : DEFAULT_PRICES[lower_first_letter(meal['PeriodName'])],
             }
         ) for meal in schedule_json])
 
