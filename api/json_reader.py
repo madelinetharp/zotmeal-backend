@@ -1,9 +1,9 @@
-from .CONSTANTS import MEAL_TO_PERIOD, PROPERTIES, DEFAULT_PRICES
+from .CONSTANTS import PROPERTIES, DEFAULT_PRICES
 from collections import defaultdict
 import time
 
 from .helpers import lower_first_letter, find_icon, normalize_time, \
-        read_schedule_UTC, get_irvine_time, get_current_meal
+        read_schedule_UTC, get_irvine_time, get_current_meal, get_meal_name
 
 from .location_management import is_valid_location, get_name, \
         get_id, get_menu_data, get_schedule_data
@@ -65,7 +65,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
-    currentMeal = lower_first_letter(MEAL_TO_PERIOD[meal_id][1])
+    currentMeal = get_meal_name(schedule, meal_id)
     foodItems   = []
 
     diner_json = {
