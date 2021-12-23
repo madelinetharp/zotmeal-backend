@@ -64,9 +64,9 @@ PROPERTIES = (
 # meals can be referred to by their id or period id alias
 # TODO: there might be a better way to implement this
 MEAL_TO_PERIOD = {
-    0: (49, 'Breakfast'),
-    1: (106, 'Lunch'),
-    2: (107, 'Dinner'),
-    3: (2651, 'Brunch')
+    0: (49, 'breakfast'),
+    1: (106, 'lunch'),
+    2: (107, 'dinner'),
+    3: (2651, 'brunch')
 }
 
