@@ -1,6 +1,7 @@
 from .CONSTANTS import PROPERTIES, DEFAULT_PRICES
 from collections import defaultdict
 import time
+from datetime import datetime, timezone
 
 from .helpers import lower_first_letter, find_icon, normalize_time, \
         read_schedule_UTC, get_irvine_time, get_current_meal, get_meal_name
@@ -57,10 +58,10 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     return a Python dictionary of the relevant components'''
 
     if meal_id is None:
-        meal_id = get_current_meal()
+        meal_id = 2#get_current_meal()
 
     if date is None:
-        date = time.strftime('%m/%d/%Y')
+        date = '1/3/2022'#time.strftime('%m/%d/%Y')
 
     restaurant  = get_name(location)
     refreshTime = int(time.time())
@@ -76,7 +77,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'price'         : DEFAULT_PRICES,
         'all'           : foodItems,
     }
-
+    print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
 
     station_dict = extract_menu(
