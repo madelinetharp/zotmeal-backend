@@ -64,6 +64,8 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         #from imports at top of file: from datetime import datetime, timezone, timedelta
         date = get_irvine_date()#current date in Irvine
 
+    meal_calc   = meal_id
+    date_calc   = date
     restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
@@ -71,6 +73,8 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     foodItems   = []
 
     diner_json = {
+        'meal'          : meal_calc,
+        'date'          : date,
         'restaurant'    : restaurant,
         'refreshTime'   : refreshTime,
         'schedule'      : schedule,
