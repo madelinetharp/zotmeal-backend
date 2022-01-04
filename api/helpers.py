@@ -33,6 +33,7 @@ def get_irvine_time():
     return local_time
 
 def get_current_meal():
+    return 2
     '''
     Return meal code for current time of the day
     Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM
