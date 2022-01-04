@@ -76,7 +76,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'price'         : DEFAULT_PRICES,
         'all'           : foodItems,
     }
-
+    print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
 
     station_dict = extract_menu(
