@@ -9,7 +9,7 @@
 # (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
 
 # request URLS bound to the .format method
-MENU_REQUEST      = 'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&meal={meal_param}&date={date_param}'.format
+MENU_REQUEST      = 'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_param}&periodId={meal_param}&date={date_param}'.format
 SCHEDULE_REQUEST  = 'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location_param}&date={date_param}'.format
 
 LOCATION_INFO = {
