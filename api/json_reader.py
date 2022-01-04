@@ -58,11 +58,13 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     return a Python dictionary of the relevant components'''
 
     if meal_id is None:
-        meal_id = 2#get_current_meal()
+        meal_id = get_current_meal()
 
     if date is None:
-        date = '1/3/2022'#time.strftime('%m/%d/%Y')
+        date = time.strftime('%m/%d/%Y')
 
+    meal_calc   = meal_id
+    date_calc   = date
     restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
@@ -70,6 +72,8 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     foodItems   = []
 
     diner_json = {
+        'meal'          : meal_calc,
+        'date'          : date,
         'restaurant'    : restaurant,
         'refreshTime'   : refreshTime,
         'schedule'      : schedule,
