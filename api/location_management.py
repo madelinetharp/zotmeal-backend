@@ -1,4 +1,4 @@
-from .CONSTANTS import LOCATION_INFO, MENU_REQUEST, SCHEDULE_REQUEST
+from .CONSTANTS import LOCATION_INFO, MENU_REQUEST, SCHEDULE_REQUEST, MEAL_TO_PERIOD
 import requests
 
 def is_valid_location(location: str) -> bool:
@@ -20,10 +20,14 @@ def get_menu_data(location, meal_id, date):
     Given a valid location, meal_id, and date,
     perform get request for the diner_json and return the dict at diner_json['Menu']
     '''
+    print(MENU_REQUEST(
+                location_param  = get_id(location), 
+                meal_param      = MEAL_TO_PERIOD[meal_id][0],
+                date_param      = date))
     return requests.get(
             MENU_REQUEST(
                 location_param  = get_id(location), 
-                meal_param      = meal_id,
+                meal_param      = MEAL_TO_PERIOD[meal_id][0],
                 date_param      = date)
             ).json()['Menu']
 
