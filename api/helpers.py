@@ -27,13 +27,17 @@ def read_schedule_UTC(utc_time: str) -> int:
     local_struct = time.gmtime(calendar.timegm(gmt_struct) + IRVINE_OFFSET)
     return normalize_time(local_struct)
 
-def get_irvine_time():
+
+def get_irvine_time() -> time.struct_time:
     'Return the local time in normalized format'
-    local_time = time.gmtime(time.time() + IRVINE_OFFSET)
-    return local_time
+    irvine_time = time.gmtime(time.time() + IRVINE_OFFSET)
+    return irvine_time
+
+def get_irvine_date() -> str:
+    irvine_time = get_irvine_time()
+    return time.strftime('%m/%d/%Y', irvine_time)
 
 def get_current_meal():
-    return 2
     '''
     Return meal code for current time of the day
     Note: it does not consider open/closing; Breakfast begins at 12:00AM, and Dinner ends at 12:00AM

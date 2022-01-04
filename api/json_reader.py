@@ -1,13 +1,13 @@
 from .CONSTANTS import PROPERTIES, DEFAULT_PRICES
 from collections import defaultdict
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
-from .helpers import lower_first_letter, find_icon, normalize_time, \
-        read_schedule_UTC, get_irvine_time, get_current_meal, get_meal_name
+from .helpers import lower_first_letter, find_icon, \
+        read_schedule_UTC, get_current_meal, get_meal_name, get_irvine_date
 
-from .location_management import is_valid_location, get_name, \
-        get_id, get_menu_data, get_schedule_data
+from .location_management import get_name, \
+        get_menu_data, get_schedule_data
 
 def extract_menu(products_list, station_id_to_name):
     '''
@@ -58,11 +58,14 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     return a Python dictionary of the relevant components'''
 
     if meal_id is None:
-        meal_id = 2#get_current_meal()
+        meal_id = get_current_meal()
 
     if date is None:
-        date = '1/3/2022'#time.strftime('%m/%d/%Y')
+        #from imports at top of file: from datetime import datetime, timezone, timedelta
+        date = get_irvine_date()#current date in Irvine
 
+    meal_calc   = meal_id
+    date_calc   = date
     restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
@@ -70,6 +73,8 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     foodItems   = []
 
     diner_json = {
+        'meal'          : meal_calc,
+        'date'          : date,
         'restaurant'    : restaurant,
         'refreshTime'   : refreshTime,
         'schedule'      : schedule,
