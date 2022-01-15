@@ -5,7 +5,7 @@ import firebase_admin#https://firebase.google.com/docs/database/admin/start
 from firebase_admin import credentials
 from firebase_admin import db
 
-from helpers import get_current_meal, get_irvine_time
+from .helpers import get_current_meal, get_irvine_time
 
 cred = credentials.Certificate(json.loads(os.getenv("FIREBASE_ADMIN_CREDENTIALS")))
 
