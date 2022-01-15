@@ -13,7 +13,7 @@ print("Using cache" if USE_CACHE else "Not using cache")
 
 # TODO: need to clear Firebase cache of outdated JSONS, should probably implement timer
 # e.g. force refresh of cache every hour
-USE_CACHE = False
+# USE_CACHE = False
 
 if USE_CACHE:
     from .firebase_utils import get_db_reference
