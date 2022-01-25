@@ -9,6 +9,8 @@ from .helpers import lower_first_letter, find_icon, \
 from .location_management import get_name, \
         get_menu_data, get_schedule_data
 
+from .sorting import station_ordering_key
+
 def extract_menu(products_list, station_id_to_name):
     '''
     Given a list of all products and a dict translating station id to name
@@ -65,12 +67,10 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         date = get_irvine_date()#current date in Irvine
 
     meal_calc   = meal_id
-    date_calc   = date
     restaurant  = get_name(location)
     refreshTime = int(time.time())
     schedule    = extract_schedule(location, date)
     currentMeal = get_meal_name(schedule, meal_id)
-    foodItems   = []
 
     diner_json = {
         'meal'          : meal_calc,
@@ -80,7 +80,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'schedule'      : schedule,
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
-        'all'           : foodItems,
+        'all'           : [],
     }
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
@@ -90,7 +90,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                     products_list       = menu_data["MenuProducts"]
                     )
     
-    for station_name in station_dict:
+    for station_name in sorted(station_dict, key=station_ordering_key):#iterate over station names in custom order
         diner_json['all'].append(
             {
                 'station'   : station_name, 
