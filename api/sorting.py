@@ -8,6 +8,7 @@ ORDERINGS = [
     'Ember/Grill',# brandywine burgers
     'Vegan',# both vegan
     'Bakery',# anteatery dessert
+    'Honeycakes/Bakery',# brandywine dessert
     'Soups',# both soup
     "Farmer's Market",# anteatery salad
     'The Farm Stand / Salad Bar'# brandywine salad
