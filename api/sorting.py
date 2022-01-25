@@ -4,11 +4,11 @@ ORDERINGS = [
     'Grubb / Mainline',# brandywine main dish
     'Compass',# brandywine main dish 2
     'Hearth/Pizza',# brandywine pizza
-    'Bakery',# anteatery dessert
     'Sizzle Grill',# anteatery burgers
     'Ember/Grill',# brandywine burgers
-    'Soups',# both soup
     'Vegan',# both vegan
+    'Bakery',# anteatery dessert
+    'Soups',# both soup
     "Farmer's Market",# anteatery salad
     'The Farm Stand / Salad Bar'# brandywine salad
 ]
