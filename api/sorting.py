@@ -15,7 +15,7 @@ ORDERINGS = [
 
 def station_ordering_key(station_name: str) -> int:
     '''
-    Returns a function used to sort stations in the preferred order. See sorting.py -> ORDERINGS to know in what order they're sorted in.
+    Returns an integer used to sort station names by relevance (basically Eric's personal preferences :) )
     '''
     try:
         return ORDERINGS.index(station_name)
