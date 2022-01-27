@@ -4,6 +4,8 @@ ORDERINGS = [
     'Grubb / Mainline',# brandywine main dish
     'Compass',# brandywine main dish 2
     'Hearth/Pizza',# brandywine pizza
+    'Deli',# anteatery sandwiches
+    'Crossroads'# brandywine 3rd entree
     'Sizzle Grill',# anteatery burgers
     'Ember/Grill',# brandywine burgers
     'Vegan',# both vegan
