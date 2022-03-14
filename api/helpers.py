@@ -3,7 +3,7 @@ import calendar
 from .CONSTANTS import MEAL_TO_PERIOD
 
 # Default offset for Irvine from GMT (GMT-8 = -28800 seconds)
-IRVINE_OFFSET = -28800
+IRVINE_OFFSET = -28800 + 3600 #remove the +3600 when daylight savings is not in effect
 
 # Helper functions
 def lower_first_letter(s: str) -> str:
