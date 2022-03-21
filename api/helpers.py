@@ -79,7 +79,7 @@ def parse_date(date: str) -> time.struct_time:
     Parse the date string "Weekday, Month Day, Year"
     into time.struct_time object
     '''
-    return time.strptime(str, "%A, %B %d, %Y")
+    return time.strptime(date, "%A, %B %d, %Y")
 
 def normalize_time_from_str(time: str) -> int:
     '''
