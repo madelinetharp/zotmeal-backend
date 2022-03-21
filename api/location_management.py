@@ -1,7 +1,7 @@
 from .CONSTANTS import LOCATION_INFO, MENU_REQUEST, SCHEDULE_REQUEST, MEAL_TO_PERIOD
 import requests
 from bs4 import BeautifulSoup as bs
-from .helpers import normalize_time_from_str, parse_date, get_irvine_time, normalize_time
+from .helpers import normalize_time_from_str, parse_date, get_irvine_time, normalize_time, get_date_str
 
 def is_valid_location(location: str) -> bool:
     'Check if the location is valid'
@@ -74,12 +74,13 @@ def get_event_data(restaurant: str) -> dict:
     row = {}
     curr_time = get_irvine_time()
     for i in range(0, int(len(rows_list) / 4)):
-        row[headers[0]] = rows_list[i*4]
+        event_date = parse_date(rows_list[i*4])
+        row[headers[0]] = get_date_str(event_date)
         row[headers[1]] = rows_list[i*4 + 1]
         time = rows_list[i*4 + 3].split(' – ')
         row[headers[2]] = normalize_time_from_str(time[0])
         row[headers[3]] = normalize_time_from_str(time[1])
-        event_date = parse_date(row[headers[0]])
+       
         if(curr_time.tm_year > event_date.tm_year or curr_time.tm_yday > event_date.tm_yday or normalize_time(curr_time) > row[headers[3]]):
             row.clear()
             continue

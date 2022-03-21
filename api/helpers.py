@@ -106,3 +106,6 @@ def normalize_time_from_str(time: str) -> int:
     if(pm):
         inttime += 1200
     return inttime
+
+def get_date_str(t: time.struct_time) -> str:
+    return time.strftime('%m/%d/%Y', t)
