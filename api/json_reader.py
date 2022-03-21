@@ -81,7 +81,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
         'all'           : [],
-        'event'         : {}
+        'themed'        : []
     }
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
@@ -99,6 +99,6 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
             }
         )
 
-    diner_json['event'] = get_event_data(restaurant)
+    diner_json['themed'].append = get_event_data(restaurant)
 
     return diner_json
