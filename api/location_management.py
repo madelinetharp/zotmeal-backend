@@ -62,29 +62,22 @@ def get_event_data(restaurant: str) -> dict:
                                         'border-right: 0.75pt dashed #999999; border-bottom: 0.75pt dashed #999999; text-align: left;',\
                                         'padding: 0.75pt; border-right: 0.75pt dashed #999999; text-align: left;',\
                                         'padding: 0.75pt; border-bottom: 0.75pt dashed #999999; text-align: left;']})
-    entries_list = list()
-
-    for i in table:
-        item_text = i.getText().strip('\n')
-        entries_list.append(item_text)
-
-    headers = ('date', 'name', 'service_start', 'service_end')
+    
+    entries_list = list(map(lambda element: element.getText().strip('\n'), table))
     rows_list = entries_list[5:]
 
     row = {}
     curr_time = get_irvine_time()
     for i in range(0, int(len(rows_list) / 4)):
         event_date = parse_date(rows_list[i*4])
-        row[headers[0]] = get_date_str(event_date)
-        row[headers[1]] = rows_list[i*4 + 1]
         time = rows_list[i*4 + 3].split(' – ')
-        row[headers[2]] = normalize_time_from_str(time[0])
-        row[headers[3]] = normalize_time_from_str(time[1])
-       
-        if(curr_time.tm_year > event_date.tm_year or curr_time.tm_yday > event_date.tm_yday or normalize_time(curr_time) > row[headers[3]]):
-            row.clear()
+        end_time = normalize_time_from_str(time[1])
+        if(curr_time.tm_year > event_date.tm_year or curr_time.tm_yday > event_date.tm_yday or normalize_time(curr_time) > end_time):
             continue
-        else:
-            break
+        row['date'] = get_date_str(event_date)
+        row['name'] = rows_list[i*4 + 1]
+        row['service_start'] = normalize_time_from_str(time[0])
+        row['service_end'] = end_time
+        break
 
     return row
