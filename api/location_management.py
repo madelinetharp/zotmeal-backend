@@ -1,5 +1,7 @@
 from .CONSTANTS import LOCATION_INFO, MENU_REQUEST, SCHEDULE_REQUEST, MEAL_TO_PERIOD
 import requests
+from bs4 import BeautifulSoup as bs
+from .helpers import normalize_time_from_str, parse_date, get_irvine_time, normalize_time, get_date_str
 
 def is_valid_location(location: str) -> bool:
     'Check if the location is valid'
@@ -41,3 +43,41 @@ def get_schedule_data(location, date):
                 location_param  = get_id(location), 
                 date_param      = date)
             ).json()['Result']
+
+def get_event_data(restaurant: str) -> dict:
+    '''
+    Given a valid location and date,
+    perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
+    '''
+    url = 'https://uci.campusdish.com/LocationsAndMenus/'
+    if(restaurant == 'Anteatery'):
+        url += 'TheAnteatery'
+    else:
+        url += restaurant
+    html = requests.get(url).text
+
+    soup = bs(html, 'html.parser')
+    table = soup.findAll('td', {'style': ['padding: 0.75pt; border-width: 0.75pt; border-right-style: dashed; border-right-color: #999999; border-bottom-style: dashed; border-bottom-color: #999999; text-align: left;',\
+                                        'padding: 0.75pt; border-width: 0.75pt; border-right-style: dashed; border-right-color: #999999; border-bottom-style: dashed; border-bottom-color: #999999; text-align: center;',\
+                                        'border-right: 0.75pt dashed #999999; border-bottom: 0.75pt dashed #999999; text-align: left;',\
+                                        'padding: 0.75pt; border-right: 0.75pt dashed #999999; text-align: left;',\
+                                        'padding: 0.75pt; border-bottom: 0.75pt dashed #999999; text-align: left;']})
+    
+    entries_list = list(map(lambda element: element.getText().strip('\n'), table))
+    rows_list = entries_list[5:]
+
+    row = {}
+    curr_time = get_irvine_time()
+    for i in range(0, int(len(rows_list) / 4)):
+        event_date = parse_date(rows_list[i*4])
+        time = rows_list[i*4 + 3].split(' – ')
+        end_time = normalize_time_from_str(time[1])
+        if(curr_time.tm_year > event_date.tm_year or curr_time.tm_yday > event_date.tm_yday or normalize_time(curr_time) > end_time):
+            continue
+        row['date'] = get_date_str(event_date)
+        row['name'] = rows_list[i*4 + 1]
+        row['service_start'] = normalize_time_from_str(time[0])
+        row['service_end'] = end_time
+        break
+
+    return row
