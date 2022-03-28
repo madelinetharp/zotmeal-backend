@@ -76,3 +76,38 @@ def get_meal_name(schedule: dict, meal_id: int) -> str:
     
     return MEAL_TO_PERIOD[meal_id][1]
     
+def parse_date(date: str) -> time.struct_time:
+    '''
+    Parse the date string "Weekday, Month Day, Year"
+    into time.struct_time object
+    '''
+    return time.strptime(date, "%A, %B %d, %Y")
+
+def normalize_time_from_str(time: str) -> int:
+    '''
+    Parse the string of time "int(:int) am/pm"
+    in normalized format
+    '''
+    time = time.lower()
+    pos1 = time.find('am')
+    pm = False
+    if(pos1 == -1):
+        pos1 = time.find('pm')
+        pm = True
+    pos2 = time.find(':')
+    
+    if(pos2 == -1):
+        inttime = int(time[0:pos1]) * 100
+    else:
+        inttime = int(time[0:pos2]) * 100 + int(time[pos2+1:pos1])
+    if(inttime >= 1200 and inttime < 1300):
+        if(not pm):
+            inttime -= 1200
+        else:
+            return inttime
+    if(pm):
+        inttime += 1200
+    return inttime
+
+def get_date_str(t: time.struct_time) -> str:
+    return time.strftime('%m/%d/%Y', t)

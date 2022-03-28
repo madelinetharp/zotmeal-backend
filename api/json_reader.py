@@ -7,7 +7,7 @@ from .helpers import lower_first_letter, find_icon, \
         read_schedule_UTC, get_current_meal, get_meal_name, get_irvine_date
 
 from .location_management import get_name, \
-        get_menu_data, get_schedule_data
+        get_menu_data, get_schedule_data, get_event_data
 
 from .sorting import station_ordering_key
 
@@ -81,6 +81,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
         'all'           : [],
+        'themed'        : get_event_data(restaurant)
     }
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
