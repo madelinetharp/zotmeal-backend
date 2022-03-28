@@ -1,9 +1,11 @@
 import time
 import calendar
+import pytz
+import datetime
 from .CONSTANTS import MEAL_TO_PERIOD
 
 # Default offset for Irvine from GMT (GMT-8 = -28800 seconds)
-IRVINE_OFFSET = -28800 + 3600 #remove the +3600 when daylight savings is not in effect
+IRVINE_OFFSET = int(datetime.datetime.utcnow().astimezone(pytz.timezone('America/Los_Angeles')).utcoffset().total_seconds())
 
 # Helper functions
 def lower_first_letter(s: str) -> str:
