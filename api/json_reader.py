@@ -81,7 +81,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
         'all'           : [],
-        'themed'        : get_event_data(restaurant)
+        'themed'        : get_event_data(restaurant)#TODO empty list doesn't store on firebase
     }
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
@@ -98,5 +98,4 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                 'menu'      : [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
             }
         )
-
     return diner_json
