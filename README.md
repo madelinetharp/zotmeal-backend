@@ -4,4 +4,9 @@
  
 See the wiki for [usage details](https://github.com/EricPedley/zotmeal-backend/wiki) and [how to get started locally](https://github.com/EricPedley/zotmeal-backend/wiki/Running-Locally).
 
-![project screenshot](https://user-images.githubusercontent.com/48658337/150261982-4297ff9a-bdbf-490d-9413-645059440133.png)
+## Links
+- Learn more on [ZotMeal Website](https://shengyuan-lu.com/zotmeal-app-website/)
+- Download ZotMeal on [Apple App Store](https://apps.apple.com/us/developer/shengyuan-lu/id1450568803)
+
+## Preview
+![EN 1](https://user-images.githubusercontent.com/70995597/159722759-44869381-624a-4d80-b063-46b4c72464ee.png)
