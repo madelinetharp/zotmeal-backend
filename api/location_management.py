@@ -51,7 +51,7 @@ def get_event_data(restaurant: str) -> list[dict]:
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
     if restaurant == 'Anteatery':
-        return [#TODO un-hardcode this
+        return [
             {
                 "date": "03/30/2022",
                 "name": "No more events this month",
