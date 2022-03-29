@@ -26,7 +26,7 @@ def extract_menu(products_list, station_id_to_name):
         item_dict = {
             'name'          : details['MarketingName'],
             'description'   : details['ShortDescription'],
-            'nutrition'     : dict([(lower_first_letter(key), details[key] or 0) for key in PROPERTIES]) | 
+            'nutrition'     : dict([(lower_first_letter(key), details[key]) for key in PROPERTIES]) | 
                 {
                     'isEatWell'       : find_icon('EatWell', details),
                     'isPlantForward'  : find_icon('PlantForward', details),

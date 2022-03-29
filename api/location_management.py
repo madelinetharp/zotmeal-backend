@@ -50,10 +50,11 @@ def get_event_data(restaurant: str) -> list[dict]:
     perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
-    if(restaurant == 'Anteatery'):
-        url += 'TheAnteatery'
-    else:
-        url += restaurant
+    # if(restaurant == 'Anteatery'):
+    #     url += 'TheAnteatery'
+    # else:
+    #     url += restaurant
+    url += "Brandywine"
     html = requests.get(url).text
 
     soup = bs(html, 'html.parser')
