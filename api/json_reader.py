@@ -26,7 +26,7 @@ def extract_menu(products_list, station_id_to_name):
         item_dict = {
             'name'          : details['MarketingName'],
             'description'   : details['ShortDescription'],
-            'nutrition'     : dict([(lower_first_letter(key), details[key] or '0' if lower_first_letter(key)=='calories' else '') for key in PROPERTIES]) | 
+            'nutrition'     : dict([(lower_first_letter(key), details[key] or None) for key in PROPERTIES]) | 
                 {
                     'isEatWell'       : find_icon('EatWell', details),
                     'isPlantForward'  : find_icon('PlantForward', details),
@@ -81,7 +81,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
         'all'           : [],
-        'themed'        : get_event_data(restaurant)#TODO empty list doesn't store on firebase
+        'themed'        : get_event_data(restaurant)
     }
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
