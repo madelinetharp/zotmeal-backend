@@ -51,14 +51,6 @@ def get_event_data(restaurant: str) -> list[dict]:
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
     if restaurant == 'Anteatery':
-        return [
-            {
-                "date": "03/30/2022",
-                "name": "No more events this month",
-                "service_start": 1100,
-                "service_end": 2200
-            }
-        ]
         url += 'TheAnteatery'
     else:
         url += restaurant
@@ -88,4 +80,11 @@ def get_event_data(restaurant: str) -> list[dict]:
             'service_end': normalize_time_from_str(end_time)
         })
 
-    return event_list
+    return event_list or [
+            {
+                "date": "04/20/2069",
+                "name": "placeholder",
+                "service_start": 1100,
+                "service_end": 2200
+            }
+        ]
