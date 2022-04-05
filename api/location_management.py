@@ -45,6 +45,14 @@ def get_schedule_data(location, date):
             ).json()['Result']
 
 def get_event_data(restaurant: str) -> list[dict]:
+    return  [
+            {
+                "date": "04/20/2069",
+                "name": "placeholder",
+                "service_start": 1100,
+                "service_end": 2200
+            }
+        ]
     '''
     Given a valid location and date,
     perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
@@ -70,6 +78,7 @@ def get_event_data(restaurant: str) -> list[dict]:
     event_list = []
     for i in range(0, len(rows_list), 4):
         event_date = parse_date(rows_list[i])
+        print(rows_list[i+3])
         start_time, end_time = rows_list[i + 3].split(' – ')# Warning: this is a weird character. The character U+2013 "–" could be confused with the character U+002d "-", which is more common in source code. UCI uses this weird character in their website for some reason, but if they change it to a normal hyphen this will break.
         if curr_time>event_date:
             continue
@@ -80,11 +89,3 @@ def get_event_data(restaurant: str) -> list[dict]:
             'service_end': normalize_time_from_str(end_time)
         })
 
-    return event_list or [
-            {
-                "date": "04/20/2069",
-                "name": "placeholder",
-                "service_start": 1100,
-                "service_end": 2200
-            }
-        ]
