@@ -1,4 +1,5 @@
-from .CONSTANTS import PROPERTIES, DEFAULT_PRICES
+import traceback
+from .CONSTANTS import PROPERTIES, DEFAULT_PRICES, EVENTS_PLACEHOLDER
 from collections import defaultdict
 import time
 from datetime import datetime, timezone, timedelta
@@ -81,8 +82,14 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         'currentMeal'   : currentMeal,
         'price'         : DEFAULT_PRICES,
         'all'           : [],
-        'themed'        : get_event_data(restaurant)
     }
+    
+    try: 
+        diner_json['themed'] = get_event_data(restaurant) or EVENTS_PLACEHOLDER
+    except:
+        traceback.print_exc()
+        diner_json['themed'] = EVENTS_PLACEHOLDER
+    
     print(f'serving request using meal_id {meal_id} and date {date}')
     menu_data = get_menu_data(location, meal_id, date)
 

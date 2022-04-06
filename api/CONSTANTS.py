@@ -70,3 +70,12 @@ MEAL_TO_PERIOD = {
     3: (2651, 'brunch')
 }
 
+EVENTS_PLACEHOLDER = [
+            {
+                "date": "04/20/2069",
+                "name": "placeholder",
+                "service_start": 1100,
+                "service_end": 2200
+            }
+        ]
+
