@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Testing Page</title>
     <style>
-        div {
+        a {
+            display:block;
             padding: 3px 12px;
             margin:10px;
             border: solid black 2px;
@@ -18,25 +19,8 @@
 </head>
 
 <body>
-    <div id="1"></div>
-    <div id="2"></div>
-
-    <script>
-        let href = window.location.href;
-        if(href.endsWith("/")) {
-            href = href.slice(0,href.length-1)
-        }
-        const atag = document.createElement('a')
-        const atag2 = document.createElement('a')
-        atag.innerText = `${href}/api?location=anteatery`
-        atag2.innerText = `${href}/api?location=brandywine&meal=1&date=01%2F23%2F2022`
-        for (tag of [atag, atag2]) {
-            console.log(tag)
-            tag.setAttribute('href', tag.innerText);
-        }
-        document.getElementById("1").appendChild(atag);
-        document.getElementById("2").appendChild(atag2);
-    </script>
+    <a href="/api?location=anteatery">Anteatery</a>
+    <a href="/api?location=brandywine">Brandywine</a>
 </body>
 
 </html>
