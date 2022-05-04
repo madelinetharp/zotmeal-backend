@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zotpass</title>
+    <style>
+        #conf-img {
+            width:130%;
+            margin-left:-15%;
+            overflow-x: hidden;
+        }
+        #banner {
+            background-color: #0064A4;
+        }
+        #text {
+            text-align: center;
+            font-family: arial,helvetica,sans-serif;
+            font-size: 14pt;
+            color: #303a46;
+            font-weight: bold;
+        }
+        #gmail {
+            display: flex;
+            position: -webkit-sticky; /* Safari */
+            position:sticky;
+            top:0;
+            right:0;
+            background-color: white;
+            padding:10px;
+        }
+        #right {
+            flex-grow:1;
+            text-align: right;
+        }
+        #right>img{
+            margin-left:5px;
+        }
+        body {
+            margin:0;
+        }
+    </style>
+</head>
+<body>
+    <div id="gmail">
+        <img src="images/back.png">
+        <span id="right">
+        <img src="images/archive.png">
+        <img src="images/trash.png">
+        <img src="images/mail.png">
+        <img src="images/hotdog.png">
+        </span>
+    </div>
+    <div id="banner">
+        <img src="images/uci-banner.png">
+    </div>
+    <div id="text"></div>
+    <img id = "conf-img" src="images/zotpass-image.jpg">
+    <script>
+        const today = new Date();
+        function zeroPad(num) {
+            if(num<10) {
+                return `0${num}`;
+            } else {
+                return num.toString();
+            }
+        }
+        document.querySelector("#text").innerText = `
+        Check-in Date: ${zeroPad(today.getMonth()+1)}-${zeroPad(today.getDate()+1)}-${today.getFullYear()} 06:${zeroPad(Math.floor(Math.random()*60))}:${zeroPad(Math.floor(Math.random()*60))} AM PDT
+        `
+    </script>
+</body>
+</html>
