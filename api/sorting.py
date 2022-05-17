@@ -20,10 +20,10 @@ ORDERINGS = [
 
 def station_ordering_key(station_name: str) -> int:
     '''
-    Returns an integer used to sort station names by relevance (basically Eric's personal preferences :) )
+    Returns an integer used to sort station names by relevance (basically Eric's personal preferences 😋)
     '''
     try:
         return ORDERINGS.index(station_name)
     except ValueError:# if 
         print(f"ValueError on station orderings. Key {station_name} is not in list")
-        return len(ORDERINGS)
+        return -1
