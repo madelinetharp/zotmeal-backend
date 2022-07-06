@@ -25,5 +25,5 @@ def station_ordering_key(station_name: str) -> int:
     try:
         return ORDERINGS.index(station_name)
     except ValueError:# if 
-        print(f"ValueError on station orderings. Key {station_name} is not in list")
+        print(f"ValueError (NON-BREAKING) on station orderings. Key {station_name} is not in list")
         return -1
