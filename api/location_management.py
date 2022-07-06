@@ -27,12 +27,20 @@ def get_menu_data(location, meal_id, date):
                 location_param  = get_id(location), 
                 meal_param      = MEAL_TO_PERIOD[meal_id][0],
                 date_param      = date))
-    return requests.get(
+    response = requests.get(
             MENU_REQUEST(
                 location_param  = get_id(location), 
                 meal_param      = MEAL_TO_PERIOD[meal_id][0],
                 date_param      = date)
-            ).json()['Menu']
+            )
+    if response.status_code==200:
+        payload = response.json()
+        if 'Menu' in payload:
+            return payload['Menu']
+        else:
+            raise KeyError(f'Key "Menu" not found in campusdish response object. Response payload below:\n{payload}')
+    else:
+        response.raise_for_status()
 
 def get_schedule_data(location, date):
     '''
