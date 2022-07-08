@@ -1,4 +1,5 @@
 import traceback
+from urllib.error import HTTPError
 from .CONSTANTS import PROPERTIES, DEFAULT_PRICES, EVENTS_PLACEHOLDER
 from collections import defaultdict
 import time
@@ -91,7 +92,25 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
         diner_json['themed'] = EVENTS_PLACEHOLDER
     
     print(f'serving request using meal_id {meal_id} and date {date}')
-    menu_data = get_menu_data(location, meal_id, date)
+    try:
+        menu_data = get_menu_data(location, meal_id, date)
+    except:
+        return {
+            'all': [
+                {
+                    'station': 'Error',
+                    'menu': [
+                        {
+                            'category': 'Error Description',
+                            'items': [{
+                                'name': 'We encountered an error getting the menu data. If the campusdish website has the menu but we don\'t, send me an email at epedley@uci.edu and I\'ll look into a fix.',
+                                'description': '🤷‍♂️'
+                            }]
+                        }
+                    ]
+                }
+            ]
+        }
 
     station_dict = extract_menu(
                     station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),
