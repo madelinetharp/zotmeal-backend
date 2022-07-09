@@ -95,8 +95,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
     try:
         menu_data = get_menu_data(location, meal_id, date)
     except:
-        return {
-            'all': [
+        diner_json['all'] = [
                 {
                     'station': 'Error',
                     'menu': [
@@ -110,7 +109,7 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                     ]
                 }
             ]
-        }
+        return diner_json
 
     station_dict = extract_menu(
                     station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),
@@ -124,4 +123,20 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                 'menu'      : [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
             }
         )
+    if diner_json['all'] == []:
+        diner_json['all'] = [
+                {
+                    'station': 'Error',
+                    'menu': [
+                        {
+                            'category': 'Error Description',
+                            'items': [{
+                                'name': 'The menu is empty for today',
+                                'description': '😭'
+                            }]
+                        }
+                    ]
+                }
+            ]
+
     return diner_json
