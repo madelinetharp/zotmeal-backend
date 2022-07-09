@@ -103,7 +103,31 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                             'category': 'Error Description',
                             'items': [{
                                 'name': 'We encountered an error getting the menu data. If the campusdish website has the menu but we don\'t, send me an email at epedley@uci.edu and I\'ll look into a fix.',
-                                'description': '🤷‍♂️'
+                                'description': '🤷‍♂️',
+                                "nutrition": {
+                                    "isVegan": True,
+                                    "isVegetarian": True,
+                                    "servingSize": "2",
+                                    "servingUnit": "tablespoons",
+                                    "calories": "60",
+                                    "caloriesFromFat": "45",
+                                    "totalFat": "5",
+                                    "transFat": "0",
+                                    "cholesterol": "0",
+                                    "sodium": "200",
+                                    "totalCarbohydrates": "4",
+                                    "dietaryFiber": "0",
+                                    "sugars": "4",
+                                    "protein": "0",
+                                    "vitaminA": None,
+                                    "vitaminC": None,
+                                    "calcium": None,
+                                    "iron": None,
+                                    "saturatedFat": "0.5",
+                                    "isEatWell": False,
+                                    "isPlantForward": False,
+                                    "isWholeGrains": False
+                                }
                             }]
                         }
                     ]
@@ -132,7 +156,31 @@ def get_diner_json(location: str, meal_id: int = None, date: str = None) -> dict
                             'category': 'Error Description',
                             'items': [{
                                 'name': 'The menu is empty for today',
-                                'description': '😭'
+                                'description': '😭',
+                                "nutrition": {
+                                    "isVegan": True,
+                                    "isVegetarian": True,
+                                    "servingSize": "2",
+                                    "servingUnit": "tablespoons",
+                                    "calories": "60",
+                                    "caloriesFromFat": "45",
+                                    "totalFat": "5",
+                                    "transFat": "0",
+                                    "cholesterol": "0",
+                                    "sodium": "200",
+                                    "totalCarbohydrates": "4",
+                                    "dietaryFiber": "0",
+                                    "sugars": "4",
+                                    "protein": "0",
+                                    "vitaminA": None,
+                                    "vitaminC": None,
+                                    "calcium": None,
+                                    "iron": None,
+                                    "saturatedFat": "0.5",
+                                    "isEatWell": False,
+                                    "isPlantForward": False,
+                                    "isWholeGrains": False
+                                }
                             }]
                         }
                     ]
