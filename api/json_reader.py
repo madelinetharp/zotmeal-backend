@@ -45,6 +45,10 @@ def extract_schedule(location: str, date: str) -> dict:
     return a dict of the meal periods
     '''
     schedule_json = get_schedule_data(location, date)
+
+    if not schedule_json:
+        return None
+
     meal_periods = dict([
         (
             # this is the meal, e.g. 'breakfast', which will map to a dict of start/end time and price
