@@ -68,11 +68,13 @@ def get_current_meal():
         return 0
 
 def get_meal_name(schedule: dict, meal_id: int) -> str:
-    if meal_id == 3 and 'brunch' not in schedule:
-        return 'lunch'
 
-    if meal_id == 1 and 'lunch' not in schedule:
-        return 'brunch'
+    if schedule:
+        if meal_id == 3 and 'brunch' not in schedule:
+            return 'lunch'
+
+        if meal_id == 1 and 'lunch' not in schedule:
+            return 'brunch'
     
     return MEAL_TO_PERIOD[meal_id][1]
     
