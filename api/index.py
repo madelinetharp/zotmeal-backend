@@ -98,7 +98,7 @@ class handler(BaseHTTPRequestHandler):
             path, params, query = self.__read_get()
             location            = self.__validate_query_location(query)
             meal, date          = self.__validate_query_meal_date(query)
-
+      
             if USE_CACHE:
                 print(f'date from query params: {date}')
                 db_ref = get_db_reference(location, meal, date)
@@ -111,6 +111,8 @@ class handler(BaseHTTPRequestHandler):
 
                 else:
                     data = db_data
+                if "schedule" not in data:
+                    data["schedule"] = None
             else:
                 data = get_diner_json(location, meal, date)
                     
@@ -141,4 +143,4 @@ class handler(BaseHTTPRequestHandler):
                     header     = ('Content-type', 'text/plain'), 
                     data        = f'Internal Server Error. Raise an issue on the github repo: https://github.com/EricPedley/zotmeal-backend. Details: {e}'
             )
-
+            
