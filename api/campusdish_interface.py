@@ -1,9 +1,8 @@
-from socketserver import DatagramRequestHandler
-from .util import MEAL_TO_PERIOD, EVENTS_PLACEHOLDER
+import traceback
 import requests
 import bs4
 from bs4 import BeautifulSoup as bs
-from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str
+from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, MEAL_TO_PERIOD, EVENTS_PLACEHOLDER
 
 def get_menu_data(location, meal_id, date):
     '''
@@ -68,7 +67,7 @@ def get_themed_event_data(restaurant: str) -> list[dict]:
                     'service_end':end_time
                 }
             except Exception as e:
-                print(f"ERROR (NON-EXITING): exception occured in event_from_soup in location_management.py.\nList of parsed contents: {text_list}\nMessage:{e}")
+                traceback.print_exc()
         return list(filter(None, (event_from_soup(row) for row in table_rows)))
     except:
         return EVENTS_PLACEHOLDER
