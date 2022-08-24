@@ -2,18 +2,18 @@
     "restaurant": "Sample",
     "refreshTime": 1639808216,
     "schedule": {
-    	"breakfast": {
-	    "start": 700,
-    	    "end"  : 1100
-	},
-	"lunch": {
-	    "start": 1100,
-	    "end"  : 1630
-	},
-	"dinner": {
-	    "start": 1630,
-	    "end"  : 2000
-	}
+        "breakfast": {
+            "start": 700,
+            "end": 1100
+        },
+        "lunch": {
+            "start": 1100,
+            "end": 1630
+        },
+        "dinner": {
+            "start": 1630,
+            "end": 2000
+        }
     },
     "currentMeal": "lunch",
     "price": {
@@ -22,6 +22,7 @@
         "brunch": 13.75,
         "dinner": 14.95
     },
+    "status": "OK",
     "all": [
         {
             "station": "The Farm Stand / Salad Bar",
