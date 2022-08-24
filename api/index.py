@@ -4,7 +4,7 @@ from typing import Union  # imported to format dict as json string
 import urllib.parse  # imported to help parsing url componenets
 import traceback  # for error handling
 import os  # imported to get environment variables
-from .campusdish_interface import is_valid_location, LOCATION_INFO
+from .util import is_valid_location, LOCATION_INFO
 from .parsing import make_response_body
 
 
@@ -84,31 +84,31 @@ class handler(BaseHTTPRequestHandler):
             else:
                 data = make_response_body(location, meal, date)
 
-            self.send_response(
+            self.send_response_with_body(
                 status_code=200,
                 body=json.dumps(data, ensure_ascii=False, indent=4),
             )
 
         except NotFoundException:
-            self.send_response(
+            self.send_response_with_body(
                 status_code=404,
                 body="Invalid path. The only one available is /api",
             )
 
         except InvalidQueryException as e:
-            self.send_response(
+            self.send_response_with_body(
                 status_code=400,
                 body=f"Invalid query parameters. Details: {e}",
             )
 
         except Exception as e:
             traceback.print_exc()
-            self.send_response(
+            self.send_response_with_body(
                 status_code=500,
                 body=f"Internal Server Error. Raise an issue on the github repo: https://github.com/EricPedley/zotmeal-backend. Details: {e}",
             )
 
-    def send_response(self, status_code: int, body: Union[str, dict]) -> None:
+    def send_response_with_body(self, status_code: int, body: Union[str, dict]) -> None:
         """
         Send an HTTP response with the given status code and body. Supports plaintext string or dict to be serialized as json.
         """
@@ -116,9 +116,9 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status_code)
         if type(body) == str:
             self.send_header("Content-type", "text/plain")
-            self.wfile.write(body.encode())
             self.end_headers()
+            self.wfile.write(body.encode())
         else:
             self.send_header("Content-type", "application/json")
-            self.wfile.write(json.dump(body))
             self.end_headers()
+            self.wfile.write(json.dump(body))
