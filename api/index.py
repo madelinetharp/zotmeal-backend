@@ -81,6 +81,8 @@ class handler(BaseHTTPRequestHandler):
                     data = db_data
                 if "schedule" not in data:
                     data["schedule"] = None
+                if "themed" not in data:
+                    data["themed"] = []
             else:
                 data = make_response_body(location, meal, date)
 
