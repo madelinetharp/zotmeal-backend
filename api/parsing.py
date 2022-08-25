@@ -2,7 +2,7 @@ import traceback
 from collections import defaultdict
 import time
 
-from .util import read_schedule_UTC, get_current_meal, get_meal_name, get_irvine_date, get_name, NUTRITION_PROPERTIES, DEFAULT_PRICES, EMPTY_MENU_OBJECT, MENU_DATA_ERROR_OBJECT
+from .util import read_schedule_UTC, get_current_meal, get_meal_name, get_name, NUTRITION_PROPERTIES, DEFAULT_PRICES, EMPTY_MENU_OBJECT, MENU_DATA_ERROR_OBJECT
 
 from .campusdish_interface import get_menu_data, get_schedule_data, get_themed_event_data
 
@@ -103,7 +103,6 @@ def make_response_body(location: str, meal_id: int = None, date: str = None) -> 
     schedule = _get_schedule(location, date)
 
     return {
-        'date'          : date or get_irvine_date(),
         'restaurant'    : restaurant,
         'refreshTime'   : int(time.time()),
         'schedule'      : schedule,

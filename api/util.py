@@ -31,10 +31,6 @@ def get_irvine_time() -> time.struct_time:
     irvine_time = time.gmtime(time.time() + IRVINE_OFFSET)
     return irvine_time
 
-def get_irvine_date() -> str:
-    irvine_time = get_irvine_time()
-    return time.strftime('%m/%d/%Y', irvine_time)
-
 def get_current_meal():
     '''
     Return meal code for current time of the day
