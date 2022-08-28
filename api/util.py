@@ -2,6 +2,40 @@ import time
 import calendar
 import pytz
 import datetime
+from dataclasses import dataclass
+from typing import Dict, List
+
+# type definitions
+
+@dataclass
+class Schedule:
+    todo: None
+
+@dataclass
+class MenuItem:
+    name: str
+    description: str
+    nutrition: dict
+@dataclass
+class Category:
+    category: str
+    items: List[MenuItem]
+
+@dataclass
+class Station:
+    station: str
+    menu: List[Category]
+
+@dataclass
+class APIResponse:
+    date: str
+    restaurant: str
+    refreshTime: int
+    schedule: Schedule
+    currentMeal: str
+    price: Dict[str, int]
+    themed: list
+    all: List[Station]
 
 
 # Helper functions
@@ -277,3 +311,4 @@ MENU_DATA_ERROR_OBJECT = [
 # example 2 (10/14/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F14%2F2021
 # (10/15/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F15%2F2021
 # (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
+
