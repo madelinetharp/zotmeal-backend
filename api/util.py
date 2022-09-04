@@ -5,7 +5,8 @@ import datetime
 from dataclasses import dataclass
 from typing import Dict, List
 
-# type definitions
+# type definitions.
+# These should match the types in the iOS source code: https://github.com/shengyuan-lu/ZotMeal-iOS/tree/main/ZotMeal/Data%20Structure
 
 @dataclass
 class Schedule:

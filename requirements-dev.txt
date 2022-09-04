@@ -1,1 +1,3 @@
+# you only need to install this if you want to run anything that actually uses the .env file
+# ask the current backend tech lead about it if this confuses you.
 python-dotenv
