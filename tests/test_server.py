@@ -4,6 +4,8 @@ from threading import Thread
 import json
 import pytest
 
+from api.index import handler
+from api.util import APIResponse
 
 
 
@@ -15,10 +17,7 @@ def test_server(monkeypatch: pytest.MonkeyPatch):
     and checks that the response fits to the right schema. This uses
     the live campusdish API.
 
-    The imports are inside this function.
     """
-    from api.index import handler
-    from api.util import APIResponse
     def start_server(port: int=3003):
         HTTPServer(("",port),handler).handle_request()
 
