@@ -79,8 +79,22 @@ class handler(BaseHTTPRequestHandler):
 
                 else:
                     data = db_data
+                mock_schedule = {
+                    "breakfast": {
+                        "start": 0,
+                        "end": 1
+                    },
+                    "lunch": {
+                        "start":2,
+                        "end":3
+                    },
+                    "dinner": {
+                        "start": 4,
+                        "end": 5
+                    }
+                }
                 if "schedule" not in data:
-                    data["schedule"] = []
+                    data["schedule"] = mock_schedule
                 if "themed" not in data:
                     data["themed"] = []
             else:
