@@ -80,7 +80,7 @@ class handler(BaseHTTPRequestHandler):
                 else:
                     data = db_data
                 if "schedule" not in data:
-                    data["schedule"] = None
+                    data["schedule"] = []
                 if "themed" not in data:
                     data["themed"] = []
             else:
