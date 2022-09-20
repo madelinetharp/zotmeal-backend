@@ -1,8 +1,10 @@
+import re
 import traceback
 import requests
 import bs4
+import json
 from bs4 import BeautifulSoup as bs
-from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, MEAL_TO_PERIOD, EVENTS_PLACEHOLDER
+from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, get_website_location_name, EVENTS_PLACEHOLDER
 
 def get_menu_data(location, meal_id, date):
     '''
@@ -10,15 +12,18 @@ def get_menu_data(location, meal_id, date):
     perform get request for the diner_json and return the dict at diner_json['Menu']
     '''
 
+    url = f'https://uci.campusdish.com/en/LocationsAndMenus/{get_website_location_name(location)}'
+
     response = requests.get(
-        f'https://uci.campusdish.com/api/menu/GetMenus?locationId={location}&periodId={MEAL_TO_PERIOD[meal_id][0]}&date={date}'
+        url
     )
     if response.status_code==200:
-        payload = response.json()
-        if 'Menu' in payload:
-            return payload['Menu']
-        else:
-            raise KeyError(f'Key "Menu" not found in campusdish response object. Response payload below:\n{payload}')
+        raw_html_text_body = response.text
+        with(open("testfile.html","w") as f):
+            f.write(raw_html_text_body)
+        obj_match = re.search(r"model: (.*)", raw_html_text_body)
+        return json.loads(obj_match.group(1))["Menu"]
+        
     else:
         print("Response error message: ", response.json())
         response.raise_for_status()

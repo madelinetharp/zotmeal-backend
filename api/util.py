@@ -153,6 +153,12 @@ def get_id(location: str) -> int:
     'Assuming valid location is provided, return id for diner'
     return LOCATION_INFO[location]['id']
 
+def get_website_location_name(location: str) -> str:
+    lookup_dict = {
+        'anteatery' : 'TheAnteatery',
+        'brandywine': 'Brandywine'
+    }
+    return lookup_dict[location]
 
 
 # Default offset for Irvine from GMT (GMT-8 = -28800 seconds)

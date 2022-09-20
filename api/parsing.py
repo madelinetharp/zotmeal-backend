@@ -26,7 +26,8 @@ def _get_menu(location, meal_id, date):
     try:
         menu_data = get_menu_data(location, meal_id, date)
         
-        station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]]),
+        station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]])
+        
         dish_list           = menu_data["MenuProducts"]
 
         for dish in dish_list:
