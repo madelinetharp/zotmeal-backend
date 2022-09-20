@@ -19,8 +19,6 @@ def get_menu_data(location, meal_id, date):
     )
     if response.status_code==200:
         raw_html_text_body = response.text
-        with(open("testfile.html","w") as f):
-            f.write(raw_html_text_body)
         obj_match = re.search(r"model: (.*)", raw_html_text_body)
         return json.loads(obj_match.group(1))["Menu"]
         
