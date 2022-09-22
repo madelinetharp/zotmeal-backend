@@ -146,19 +146,12 @@ def get_date_str(t: time.struct_time) -> str:
     return time.strftime('%m/%d/%Y', t)
 
 def get_name(location: str):
-    'Assuming valid location is provided, return the official name for diner'
+    'Returns the location name, except capitalized, using a dictionary lookup'
     return LOCATION_INFO[location]['official']
 
 def get_id(location: str) -> int:
-    'Assuming valid location is provided, return id for diner'
+    'Returns the id campusdish uses for the location'
     return LOCATION_INFO[location]['id']
-
-def get_website_location_name(location: str) -> str:
-    lookup_dict = {
-        'anteatery' : 'TheAnteatery',
-        'brandywine': 'Brandywine'
-    }
-    return lookup_dict[location]
 
 
 # Default offset for Irvine from GMT (GMT-8 = -28800 seconds)
