@@ -62,6 +62,7 @@ class handler(BaseHTTPRequestHandler):
 
             date = query["date"][0] if "date" in query else None
              # note: data gets decoded by urllib, so it will contain slashes.
+            do_refresh = dict.get(query, 'refresh', [False])[0]
 
             if meal is None and date is not None:
                 raise InvalidQueryException(
@@ -73,7 +74,7 @@ class handler(BaseHTTPRequestHandler):
                 db_ref = get_db_reference(location, meal, date)
                 db_data = db_ref.get()
 
-                if db_data is None:
+                if db_data is None or do_refresh=='True':
                     data = make_response_body(location, meal, date)
                     db_ref.set(data)
 
