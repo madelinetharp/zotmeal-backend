@@ -45,8 +45,10 @@ def get_schedule_data(restaurant: str) -> dict:
     for idx, meal in enumerate(meal_period):
         meal = meal.getText().lower()
         times = location_times[idx].getText().split(' - ')
-        start = int(times[0][0:-5])
-        end = int(times[1][0:-5])
+        # start = int(times[0][0:-5])
+        # end = int(times[1][0:-5])
+        start=times[0]
+        end=times[1]
         schedule[meal] = {"start": start, "end": end}
     return schedule
 
