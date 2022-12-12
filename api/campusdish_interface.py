@@ -77,7 +77,7 @@ def get_themed_event_data(restaurant: str) -> list[dict]:
                          for td in soup_object.find_all("td")]
             try:
                 event_date = parse_date(text_list[0])
-                if event_date < get_irvine_time():
+                if event_date == None or event_date < get_irvine_time():
                     return False
 
                 # Warning: this is a weird character. The character U+2013 "–" could be confused with the character U+002d "-", which is more common in source code. UCI uses this weird character in their website for some reason, but if they change it to a normal hyphen this will break.
