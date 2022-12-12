@@ -32,6 +32,12 @@ def get_schedule_data(restaurant: str) -> dict:
     Given the restaurant name,
     perform get request, then parse the HTML code using BeautifulSoup 4
     return a dictionary
+    schedule time use int because frontend work with int
+    breakfast start and end with AM
+    brunch start and end with AM
+    lunch start with AM end with PM
+    dinner start and end with PM
+    latenight start and end with PM
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
     if restaurant == 'Anteatery':
@@ -45,10 +51,8 @@ def get_schedule_data(restaurant: str) -> dict:
     for idx, meal in enumerate(meal_period):
         meal = meal.getText().lower()
         times = location_times[idx].getText().split(' - ')
-        # start = int(times[0][0:-5])
-        # end = int(times[1][0:-5])
-        start=times[0]
-        end=times[1]
+        start = int(times[0][0:-5])
+        end = int(times[1][0:-5])
         schedule[meal] = {"start": start, "end": end}
     return schedule
 
