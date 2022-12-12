@@ -4,6 +4,7 @@ import bs4
 from bs4 import BeautifulSoup as bs
 from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, MEAL_TO_PERIOD, EVENTS_PLACEHOLDER, LOCATION_INFO
 
+
 def get_menu_data(location, meal_id, date):
     '''
     Given a valid location, meal_id, and date,
@@ -14,29 +15,40 @@ def get_menu_data(location, meal_id, date):
     response = requests.get(
         f'https://uci.campusdish.com/api/menu/GetMenus?locationId={location_id}&periodId={MEAL_TO_PERIOD[meal_id][0]}&date={date}'
     )
-    if response.status_code==200:
+    if response.status_code == 200:
         payload = response.json()
         if 'Menu' in payload:
             return payload['Menu']
         else:
-            raise KeyError(f'Key "Menu" not found in campusdish response object. Response payload below:\n{payload}')
+            raise KeyError(
+                f'Key "Menu" not found in campusdish response object. Response payload below:\n{payload}')
     else:
         print("Response error message: ", response.json())
         response.raise_for_status()
 
-def get_schedule_data(location, date):
+
+def get_schedule_data(restaurant: str) -> list[dict]:
     '''
     Given a valid location and date,
-    perform get request for the schedule_json
+    perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
     '''
-    response = requests.get(
-        f'https://uci.campusdish.com/api/menu/GetMenuPeriods?locationId={location}&date={date}'
-    )
-    if response.status_code==200:
-        return response.json()['Result']
+    url = 'https://uci.campusdish.com/LocationsAndMenus/'
+    if restaurant == 'Anteatery':
+        url += 'TheAnteatery'
     else:
-        print("Response error message: ", response.json())
-        response.raise_for_status()
+        url += restaurant
+    schedule = {}
+    soup = bs(requests.get(url).text, 'html.parser')
+    meal_period = soup.select('.mealPeriod')[:5]
+    location_times = soup.select('span[class=location__times]')[:5]
+    for idx, meal in enumerate(meal_period):
+        meal = meal.getText().lower()
+        times = location_times[idx].getText().split(' - ')
+        start = int(times[0][0:-5])
+        end = int(times[1][0:-5])
+        schedule[meal] = {"start": start, "end": end}
+    return schedule
+
 
 def get_themed_event_data(restaurant: str) -> list[dict]:
     '''
@@ -51,21 +63,24 @@ def get_themed_event_data(restaurant: str) -> list[dict]:
 
     try:
         soup = bs(requests.get(url).text, 'html.parser')
-        table_rows = soup.find_all('tr', attrs={"style":"height: 10pt;"})
+        table_rows = soup.find_all('tr', attrs={"style": "height: 10pt;"})
 
         def event_from_soup(soup_object: bs4.element.Tag):
-            text_list = [td.getText().strip() for td in soup_object.find_all("td")]
+            text_list = [td.getText().strip()
+                         for td in soup_object.find_all("td")]
             try:
                 event_date = parse_date(text_list[0])
-                if event_date<get_irvine_time():
+                if event_date < get_irvine_time():
                     return False
 
-                start_time, end_time = map(normalize_time_from_str, text_list[3].split(' – '))# Warning: this is a weird character. The character U+2013 "–" could be confused with the character U+002d "-", which is more common in source code. UCI uses this weird character in their website for some reason, but if they change it to a normal hyphen this will break.
+                # Warning: this is a weird character. The character U+2013 "–" could be confused with the character U+002d "-", which is more common in source code. UCI uses this weird character in their website for some reason, but if they change it to a normal hyphen this will break.
+                start_time, end_time = map(
+                    normalize_time_from_str, text_list[3].split(' – '))
                 return {
-                    'date':get_date_str(event_date),
-                    'name':text_list[1],
-                    'service_start':start_time,
-                    'service_end':end_time
+                    'date': get_date_str(event_date),
+                    'name': text_list[1],
+                    'service_start': start_time,
+                    'service_end': end_time
                 }
             except Exception as e:
                 traceback.print_exc()
