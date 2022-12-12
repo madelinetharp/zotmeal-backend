@@ -27,10 +27,11 @@ def get_menu_data(location, meal_id, date):
         response.raise_for_status()
 
 
-def get_schedule_data(restaurant: str) -> list[dict]:
+def get_schedule_data(restaurant: str) -> dict:
     '''
-    Given a valid location and date,
-    perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
+    Given the restaurant name,
+    perform get request, then parse the HTML code using BeautifulSoup 4
+    return a dictionary
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
     if restaurant == 'Anteatery':
@@ -52,7 +53,7 @@ def get_schedule_data(restaurant: str) -> list[dict]:
 
 def get_themed_event_data(restaurant: str) -> list[dict]:
     '''
-    Given a valid location and date,
+    Given a valid restaurant name,
     perform get request, then parse the HTML code for the event_json using BeautifulSoup 4
     '''
     url = 'https://uci.campusdish.com/LocationsAndMenus/'
