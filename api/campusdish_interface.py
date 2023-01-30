@@ -1,6 +1,7 @@
 import traceback
 import requests
 import bs4
+import re
 from bs4 import BeautifulSoup as bs
 from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, MEAL_TO_PERIOD, EVENTS_PLACEHOLDER, LOCATION_INFO
 
@@ -47,9 +48,26 @@ def get_schedule_data(restaurant: str) -> dict:
     for idx, meal in enumerate(meal_period):
         meal = meal.getText().lower()
         times = location_times[idx].getText().split(' - ')
-        start = normalize_time_from_str(times[0])
-        end = normalize_time_from_str(times[1])
-        schedule[meal] = {"start": start, "end": end}
+        if re.match(r"^\d?\d:\d\d(AM|PM)$", times[0]) and re.match(r"^\d?\d:\d\d(AM|PM)$", times[1]):
+            start = normalize_time_from_str(times[0])
+            end = normalize_time_from_str(times[1])
+            schedule[meal] = {"start": start, "end": end}
+        else:
+            print("Invalid time")
+            schedule = {
+                "breakfast": {
+                    "start": 0,
+                    "end": 1
+                },
+                "lunch": {
+                    "start": 2,
+                    "end": 3
+                },
+                "dinner": {
+                    "start": 4,
+                    "end": 5
+                }
+            }
     return schedule
 
 
