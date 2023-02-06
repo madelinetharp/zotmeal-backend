@@ -8,24 +8,30 @@ from typing import Dict, List
 # type definitions.
 # These should match the types in the iOS source code: https://github.com/shengyuan-lu/ZotMeal-iOS/tree/main/ZotMeal/Data%20Structure
 
+
 @dataclass
 class Schedule:
     todo: None
+
 
 @dataclass
 class MenuItem:
     name: str
     description: str
     nutrition: dict
+
+
 @dataclass
 class Category:
     category: str
     items: List[MenuItem]
 
+
 @dataclass
 class Station:
     station: str
     menu: List[Category]
+
 
 @dataclass
 class APIResponse:
@@ -47,9 +53,11 @@ def is_valid_location(location: str) -> bool:
         return True
     return False
 
+
 def normalize_time(time_struct: time.struct_time) -> int:
     'Formats the time into a 4-digit integer, controls how time is represented in API'
     return int(f'{time_struct.tm_hour}{time_struct.tm_min:02}')
+
 
 def read_schedule_UTC(utc_time: str) -> int:
     '''
@@ -66,9 +74,11 @@ def get_irvine_time() -> time.struct_time:
     irvine_time = time.gmtime(time.time() + IRVINE_OFFSET)
     return irvine_time
 
+
 def get_irvine_date() -> str:
     irvine_time = get_irvine_time()
     return time.strftime('%m/%d/%Y', irvine_time)
+
 
 def get_current_meal():
     '''
@@ -78,10 +88,10 @@ def get_current_meal():
     irvine_time = get_irvine_time()
     now = normalize_time(irvine_time)
 
-    breakfast   = 0000
-    lunch       = 1100
-    dinner      = 1630
-    
+    breakfast = 0000
+    lunch = 1100
+    dinner = 1630
+
     # After 16:30, Dinner, Meal-Code: 2
     if now >= dinner:
         return 2
@@ -98,6 +108,7 @@ def get_current_meal():
     if now >= breakfast:
         return 0
 
+
 def get_meal_name(schedule: dict, meal_id: int) -> str:
 
     if schedule:
@@ -106,15 +117,18 @@ def get_meal_name(schedule: dict, meal_id: int) -> str:
 
         if meal_id == 1 and 'lunch' not in schedule:
             return 'brunch'
-    
+
     return MEAL_TO_PERIOD[meal_id][1]
-    
+
+
 def parse_date(date: str) -> time.struct_time:
     '''
     Parse the date string "Weekday, Month Day, Year"
     into time.struct_time object
     '''
-    return time.strptime(date, "%A, %B %d, %Y")
+    # if len(date) > 0:
+    return time.strptime(date, "%B %d, %Y")
+
 
 def normalize_time_from_str(time: str) -> int:
     '''
@@ -124,30 +138,33 @@ def normalize_time_from_str(time: str) -> int:
     time = time.lower()
     pos1 = time.find('am')
     pm = False
-    if(pos1 == -1):
+    if (pos1 == -1):
         pos1 = time.find('pm')
         pm = True
     pos2 = time.find(':')
-    
-    if(pos2 == -1):
+
+    if (pos2 == -1):
         inttime = int(time[0:pos1]) * 100
     else:
         inttime = int(time[0:pos2]) * 100 + int(time[pos2+1:pos1])
-    if(inttime >= 1200 and inttime < 1300):
-        if(not pm):
+    if (inttime >= 1200 and inttime < 1300):
+        if (not pm):
             inttime -= 1200
         else:
             return inttime
-    if(pm):
+    if (pm):
         inttime += 1200
     return inttime
+
 
 def get_date_str(t: time.struct_time) -> str:
     return time.strftime('%m/%d/%Y', t)
 
+
 def get_name(location: str):
     'Returns the location name, except capitalized, using a dictionary lookup'
     return LOCATION_INFO[location]['official']
+
 
 def get_id(location: str) -> int:
     'Returns the id campusdish uses for the location'
@@ -155,32 +172,33 @@ def get_id(location: str) -> int:
 
 
 # Default offset for Irvine from GMT (GMT-8 = -28800 seconds)
-IRVINE_OFFSET = int(datetime.datetime.utcnow().astimezone(pytz.timezone('America/Los_Angeles')).utcoffset().total_seconds())
+IRVINE_OFFSET = int(datetime.datetime.utcnow().astimezone(
+    pytz.timezone('America/Los_Angeles')).utcoffset().total_seconds())
 # Constants
 
 LOCATION_INFO = {
     'brandywine': {
-        'official'  : 'Brandywine',
-        'id'        : 3314,
+        'official': 'Brandywine',
+        'id': 3314,
     },
 
     'anteatery': {
-        'official'  : 'Anteatery',
-        'id'        : 3056,
+        'official': 'Anteatery',
+        'id': 3056,
     }
 }
 
 DEFAULT_PRICES = {
-    'breakfast' : 9.75,
-    'lunch'     : 13.75,
-    'brunch'    : 13.75,
-    'dinner'    : 14.95
+    'breakfast': 9.75,
+    'lunch': 13.75,
+    'brunch': 13.75,
+    'dinner': 14.95
 }
 
 # Default opening and closing times
 # TODO: Might implement a class to determine default open/close depending on day
-DEFAULT_OPEN    = 715
-DEFAULT_CLOSE   = 2200
+DEFAULT_OPEN = 715
+DEFAULT_CLOSE = 2200
 
 
 # Relevant Nutrition Properties
@@ -217,20 +235,20 @@ MEAL_TO_PERIOD = {
 }
 
 EVENTS_PLACEHOLDER = [
-            {
-                "date": "04/20/2069",
+    {
+        "date": "04/20/2069",
                 "name": "placeholder",
                 "service_start": 1100,
                 "service_end": 2200
-            }
-        ]
+    }
+]
 
 EMPTY_MENU_OBJECT = [
-                {
-                    'station': 'Error',
-                    'menu': [
-                        {
-                            'category': 'Error Description',
+    {
+        'station': 'Error',
+        'menu': [
+            {
+                'category': 'Error Description',
                             'items': [{
                                 'name': 'The menu is empty for today',
                                 'description': '😭',
@@ -259,17 +277,17 @@ EMPTY_MENU_OBJECT = [
                                     "isWholeGrains": False
                                 }
                             }]
-                        }
-                    ]
-                }
-            ]
+            }
+        ]
+    }
+]
 
 MENU_DATA_ERROR_OBJECT = [
-                {
-                    'station': 'Error',
-                    'menu': [
-                        {
-                            'category': 'Error Description',
+    {
+        'station': 'Error',
+        'menu': [
+            {
+                'category': 'Error Description',
                             'items': [{
                                 'name': 'We encountered an error getting the menu data. If the campusdish website has the menu but we don\'t, send me an email at epedley@uci.edu and I\'ll look into a fix.',
                                 'description': '🤷‍♂️',
@@ -298,16 +316,14 @@ MENU_DATA_ERROR_OBJECT = [
                                     "isWholeGrains": False
                                 }
                             }]
-                        }
-                    ]
-                }
-            ]
+            }
+        ]
+    }
+]
 
 
-
-
-#anteatery 01/14/2022 breakfast
-#https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
+# anteatery 01/14/2022 breakfast
+# https://uci.campusdish.com/api/menu/GetMenus?locationId=3056&date=01/14/2022&periodId=49
 
 # brandywine lunch 10/14/2021: https://uci.campusdish.com/en/LocationsAndMenus/Brandywine?locationId=3314&storeIds=&mode=Daily&periodId=106&date=10%2F14%2F2021
 # anteatery examples:
@@ -315,4 +331,3 @@ MENU_DATA_ERROR_OBJECT = [
 # example 2 (10/14/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F14%2F2021
 # (10/15/2021 dinner): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=107&date=10%2F15%2F2021
 # (10/21/2021 breakfast): https://uci.campusdish.com/en/LocationsAndMenus/TheAnteatery?locationId=3056&storeIds=&mode=Daily&periodId=105&date=10%2F21%2F2021
-
