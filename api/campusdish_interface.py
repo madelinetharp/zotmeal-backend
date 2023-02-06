@@ -43,6 +43,7 @@ def get_schedule_data(restaurant: str) -> dict:
         url += restaurant
     schedule = {}
     soup = bs(requests.get(url).text, 'html.parser')
+    print("got BS object")
     meal_period = soup.select('.mealPeriod')[:5]
     location_times = soup.select('span[class=location__times]')[:5]
     for idx, meal in enumerate(meal_period):
@@ -68,6 +69,7 @@ def get_schedule_data(restaurant: str) -> dict:
                     "end": 5
                 }
             }
+    print("parsed BS object")
     return schedule
 
 

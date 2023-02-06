@@ -79,9 +79,11 @@ def make_response_body(location: str, meal_id: int = None, date: str = None) -> 
 
     if meal_id is None:
         meal_id = get_current_meal()
-
+    print("got current meal")
     restaurant = get_name(location)
+    print("got name")
     schedule = get_schedule_data(restaurant)
+    print("got schedule data")
 
     return {
         'date': date or get_irvine_date(),

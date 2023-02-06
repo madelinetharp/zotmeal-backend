@@ -99,6 +99,7 @@ class handler(BaseHTTPRequestHandler):
                 if "themed" not in data:
                     data["themed"] = []
             else:
+                print("serving without cache")
                 data = make_response_body(location, meal, date)
 
             self.send_response_with_body(
