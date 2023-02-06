@@ -31,17 +31,20 @@ class NotFoundException(Exception):
 
 
 class handler(BaseHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        print("initializing handler object")
+        super().__init__(*args, **kwargs)
 
     def do_GET(self):
         """
         Receive HTTP request and send response
         """
-
+        print("entered get handler")
         try:
             _protocol, _url, path, params, raw_query, _ = urllib.parse.urlparse(
                 "//" + self.path # prepending the // tricks urlparse into parsing correctly since self.path isn't the whole URL
             )  
-
+            print("parsed query string")
             query = urllib.parse.parse_qs(raw_query)
         
             if path not in ("/api", "/api/"):
@@ -57,7 +60,7 @@ class handler(BaseHTTPRequestHandler):
                 raise InvalidQueryException(
                     f"The location specified is not valid. Valid locations: {list(LOCATION_INFO.keys())}"
                 )
-
+            print("validated location")
             meal = int(query["meal"][0]) if "meal" in query else None
 
             date = query["date"][0] if "date" in query else None
