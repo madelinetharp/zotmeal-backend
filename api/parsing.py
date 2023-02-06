@@ -8,11 +8,9 @@ from .campusdish_interface import get_menu_data, get_schedule_data, get_themed_e
 
 from .sorting import station_ordering_key
 
-
 def _lower_first_letter(s: str) -> str:
     'Lowercase the first letter of a string'
     return s[0].lower() + s[1:]
-
 
 def _get_menu(location, meal_id, date):
     '''
@@ -27,39 +25,36 @@ def _get_menu(location, meal_id, date):
 
     try:
         menu_data = get_menu_data(location, meal_id, date)
-
-        station_id_to_name = dict(
-            [(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]])
-
-        dish_list = menu_data["MenuProducts"]
+        
+        station_id_to_name  = dict([(entry['StationId'], entry['Name']) for entry in menu_data["MenuStations"]])
+        
+        dish_list           = menu_data["MenuProducts"]
 
         for dish in dish_list:
-            details = dish['Product']
-            station_name = station_id_to_name[dish['StationId']].replace(
-                '/ ', ' / ')
-            category_name = details['Categories'][0]['DisplayName']
+            details         = dish['Product']
+            station_name    = station_id_to_name[dish['StationId']].replace('/ ',' / ')
+            category_name   = details['Categories'][0]['DisplayName']
 
             dish_object = {
-                'name': details['MarketingName'],
-                'description': details['ShortDescription'],
-                'nutrition': dict([(_lower_first_letter(property_name), details.get(property_name)) for property_name in NUTRITION_PROPERTIES]) |
-                {
-                    'isEatWell': _find_icon('EatWell', details),
-                    'isPlantForward': _find_icon('PlantForward', details),
-                    'isWholeGrain': _find_icon('WholeGrain', details),
-                },
-            }
+                'name'          : details['MarketingName'],
+                'description'   : details['ShortDescription'],
+                'nutrition'     : dict([(_lower_first_letter(property_name), details.get(property_name)) for property_name in NUTRITION_PROPERTIES]) | 
+                    {
+                        'isEatWell'       : _find_icon('EatWell', details),
+                        'isPlantForward'  : _find_icon('PlantForward', details),
+                        'isWholeGrain'    : _find_icon('WholeGrain', details),
+                    },
+            } 
 
             station_dict[station_name][category_name].append(dish_object)
-
+        
         menu = []
 
-        # iterate over station names in custom order
-        for station_name in sorted(station_dict, key=station_ordering_key):
+        for station_name in sorted(station_dict, key=station_ordering_key):#iterate over station names in custom order
             menu.append(
                 {
-                    'station': station_name,
-                    'menu': [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
+                    'station'   : station_name, 
+                    'menu'      : [{'category': category, 'items': items} for category, items in station_dict[station_name].items()]
                 }
             )
         return menu or EMPTY_MENU_OBJECT
@@ -67,6 +62,31 @@ def _get_menu(location, meal_id, date):
         traceback.print_exc()
         return MENU_DATA_ERROR_OBJECT
 
+def _get_schedule(location: str, date: str) -> dict:
+    '''
+    Given a location and a date as a string, perform a get request for that date's schedule,
+    return a dict of the meal periods
+    '''
+    try:
+        schedule_json = get_schedule_data(location, date)
+
+        if not schedule_json:
+            return None
+
+        meal_periods = dict([
+            (
+                # this is the meal, e.g. 'breakfast', which will map to a dict of start/end time and price
+                _lower_first_letter(meal['PeriodName']), 
+                {
+                    'start' : read_schedule_UTC(meal['UtcMealPeriodStartTime']),
+                    'end'   : read_schedule_UTC(meal['UtcMealPeriodEndTime']),
+                }
+            ) for meal in schedule_json])
+
+        return meal_periods
+    except:
+        traceback.print_exc()
+        return None
 
 def make_response_body(location: str, meal_id: int = None, date: str = None) -> dict:
     ''' 
@@ -81,15 +101,15 @@ def make_response_body(location: str, meal_id: int = None, date: str = None) -> 
         meal_id = get_current_meal()
 
     restaurant = get_name(location)
-    schedule = get_schedule_data(restaurant)
+    schedule = _get_schedule(location, date)
 
     return {
-        'date': date or get_irvine_date(),
-        'restaurant': restaurant,
-        'refreshTime': int(time.time()),
-        'schedule': schedule,
-        'currentMeal': get_meal_name(schedule, meal_id),
-        'price': DEFAULT_PRICES,
-        'themed': get_themed_event_data(restaurant),
-        'all': _get_menu(location, meal_id, date)
+        'date'          : date or get_irvine_date(),
+        'restaurant'    : restaurant,
+        'refreshTime'   : int(time.time()),
+        'schedule'      : schedule,
+        'currentMeal'   : get_meal_name(schedule, meal_id),
+        'price'         : DEFAULT_PRICES,
+        'themed'        : get_themed_event_data(restaurant),
+        'all'           : _get_menu(location, meal_id, date)
     }
