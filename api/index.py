@@ -138,6 +138,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status_code)
         if type(body) == str:
             self.send_header("Content-type", "text/plain")
+            self.send_header("Access-Control-Allow-Origin", "*") # this lets the browser know it's okay to make a cross origin request from any origin.
             self.end_headers()
             self.wfile.write(body.encode())
         else:
