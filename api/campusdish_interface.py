@@ -2,6 +2,7 @@ import traceback
 import requests
 import bs4
 import re
+from datetime import datetime
 from bs4 import BeautifulSoup as bs
 from .util import normalize_time_from_str, parse_date, get_irvine_time, get_date_str, MEAL_TO_PERIOD, EVENTS_PLACEHOLDER, LOCATION_INFO
 
@@ -36,8 +37,8 @@ def get_schedule_data(restaurant: str) -> dict:
     schedule time use int because frontend work with int
     schedule time is (100*hours)+minutes, where hours is in 24-hour time
     '''
+
     try:
-        raise NotImplementedError("This function has bugs and isn't ready for prod yet")
         url = 'https://uci.campusdish.com/LocationsAndMenus/'
         if restaurant == 'Anteatery':
             url += 'TheAnteatery'
@@ -45,14 +46,42 @@ def get_schedule_data(restaurant: str) -> dict:
             url += restaurant
         schedule = {}
         soup = bs(requests.get(url).text, 'html.parser')
-        meal_period = soup.select('.mealPeriod')[:5]
-        location_times = soup.select('span[class=location__times]')[:5]
-        for idx, meal in enumerate(meal_period):
-            meal = meal.getText().lower()
-            times = location_times[idx].getText().split(' - ')
-            if re.match(r"^\d?\d:\d\d(AM|PM)$", times[0]) and re.match(r"^\d?\d:\d\d(AM|PM)$", times[1]):
-                start = normalize_time_from_str(times[0])
-                end = normalize_time_from_str(times[1])
+        meal_period = soup.select('.mealPeriod')
+
+        location_times = soup.select('span[class=location__times]')
+        times = []
+        meals = []
+
+        for time in location_times:
+            times.append(time.getText().split(' - '))
+        times.append([times[-2][0],times[-1][1]]) #extended dinner
+        for meal in meal_period:
+            meals.append(meal.getText().lower())
+        # print(times)
+        # Hard coded to match the UCI website schedule
+        weekday = [(meals[0], times[0]), #Breakfast
+                (meals[2], times[3]), #Lunch
+                (meals[3], times[4]), #Dinner
+               (meals[3], times[-1])] #Extended dinner time because of latenight
+        weekend = [(meals[0], times[1]), #Breakfast
+                (meals[1], times[2]), #Brunch
+                (meals[3], times[4]) #Dinner
+        ]
+        # if today is in the range of 0-4, it is Weekday otherwise weekend
+        today = datetime.now().weekday()
+        if today>4:
+           data=weekend
+        else:
+            data = weekday
+            if today ==4:
+                del data[-1]
+            else:
+                del data[-2]
+        
+        for (meal, time) in data:
+            if re.match(r"^\d?\d:\d\d(AM|PM)$", time[0]) and re.match(r"^\d?\d:\d\d(AM|PM)$", time[1]):
+                start = normalize_time_from_str(time[0])
+                end = normalize_time_from_str(time[1])
                 schedule[meal] = {"start": start, "end": end}
             else:
                 print("Invalid time")
