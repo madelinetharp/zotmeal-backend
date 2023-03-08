@@ -90,23 +90,26 @@ class handler(BaseHTTPRequestHandler):
                     db_ref.set(data)
 
                 else:
-                    data = db_data
+                    data = db_data 
+
                 mock_schedule = {
                     "breakfast": {
-                        "start": 0,
-                        "end": 1
+                        "start": 1,
+                        "end": 2
                     },
                     "lunch": {
                         "start":2,
                         "end":3
                     },
                     "dinner": {
-                        "start": 4,
-                        "end": 5
+                        "start": 3,
+                        "end": 4
                     }
                 }
+                
                 if "schedule" not in data:
                     data["schedule"] = mock_schedule
+                
                 if "themed" not in data:
                     data["themed"] = []
             else:
@@ -145,6 +148,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(status_code)
         if type(body) == str:
             self.send_header("Content-type", "text/plain")
+            self.send_header("Access-Control-Allow-Origin", "*") # this lets the browser know it's okay to make a cross origin request from any origin.
             self.end_headers()
             self.wfile.write(body.encode())
         else:
