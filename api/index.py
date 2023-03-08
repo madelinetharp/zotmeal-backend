@@ -46,15 +46,15 @@ class handler(BaseHTTPRequestHandler):
         
             if path not in ("/api", "/api/"):
                 raise NotFoundException
-
-            if "analytics" in query:
-                db_ref = get_Analytics()
-                db_data = db_ref.get()
-                self.send_response_with_body(
-                    status_code=200,
-                    body=json.dumps(db_data, ensure_ascii=False, indent=4),
-                )
-                return
+            if USE_CACHE:
+                if "analytics" in query:
+                    db_ref = get_Analytics()
+                    db_data = db_ref.get()
+                    self.send_response_with_body(
+                        status_code=200,
+                        body=json.dumps(db_data, ensure_ascii=False, indent=4),
+                    )
+                    return
 
 
             if "location" not in query:
