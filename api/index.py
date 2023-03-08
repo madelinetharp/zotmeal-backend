@@ -44,10 +44,10 @@ class handler(BaseHTTPRequestHandler):
 
             query = urllib.parse.parse_qs(raw_query)
         
-            if path not in ("/api", "/api/", "/api/analytics"):
+            if path not in ("/api", "/api/"):
                 raise NotFoundException
 
-            if path == "/api/analytics":
+            if "analytics" in query:
                 db_ref = get_Analytics()
                 db_data = db_ref.get()
                 self.send_response_with_body(
