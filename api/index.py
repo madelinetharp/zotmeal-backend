@@ -133,7 +133,8 @@ class handler(BaseHTTPRequestHandler):
             )
 
         except Exception as e:
-            updateAnalytics(error=True)
+            if USE_CACHE:
+                updateAnalytics(error=True)
             traceback.print_exc()
             self.send_response_with_body(
                 status_code=500,
