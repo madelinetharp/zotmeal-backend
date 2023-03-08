@@ -16,7 +16,7 @@ print("Using cache" if USE_CACHE else "Not using cache")
 # e.g. force refresh of cache every hour
 
 if USE_CACHE:
-    from .firebase_utils import get_db_reference, updateAnalytics
+    from .firebase_utils import get_db_reference, updateAnalytics, get_Analytics
 
 class InvalidQueryException(Exception):
     pass
@@ -46,6 +46,16 @@ class handler(BaseHTTPRequestHandler):
         
             if path not in ("/api", "/api/"):
                 raise NotFoundException
+            if USE_CACHE:
+                if "analytics" in query:
+                    db_ref = get_Analytics()
+                    db_data = db_ref.get()
+                    self.send_response_with_body(
+                        status_code=200,
+                        body=json.dumps(db_data, ensure_ascii=False, indent=4),
+                    )
+                    return
+
 
             if "location" not in query:
                 raise InvalidQueryException("No location query parameter specified")
@@ -123,7 +133,8 @@ class handler(BaseHTTPRequestHandler):
             )
 
         except Exception as e:
-            updateAnalytics(error=True)
+            if USE_CACHE:
+                updateAnalytics(error=True)
             traceback.print_exc()
             self.send_response_with_body(
                 status_code=500,
