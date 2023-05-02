@@ -59,3 +59,9 @@ def category_ordering_key(category_name) -> int:
         print(category_name)
         print(f"ValueError (NON-BREAKING) on category orderings. Key {category_name} is not in list")
         return -1
+    
+combining_keys = [
+    "Grubb / Mainline", 
+    "Crossroads",
+    "Home"
+]
