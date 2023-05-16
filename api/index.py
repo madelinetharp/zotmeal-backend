@@ -17,7 +17,7 @@ print("Using cache" if USE_CACHE else "Not using cache")
 # e.g. force refresh of cache every hour
 
 if USE_CACHE:
-    from .firebase_utils import get_db_reference, updateAnalytics, get_Analytics
+    from .firebase_utils import get_db_reference, updateAnalytics, get_Analytics, update_upvote_count, get_upvote_count
 
 class InvalidQueryException(Exception):
     pass
@@ -68,6 +68,7 @@ class handler(BaseHTTPRequestHandler):
                 raise InvalidQueryException(
                     f"The location specified is not valid. Valid locations: {list(LOCATION_INFO.keys())}"
                 )
+                        
 
             meal = int(query["meal"][0]) if "meal" in query else None
 
@@ -79,6 +80,24 @@ class handler(BaseHTTPRequestHandler):
                 raise InvalidQueryException(
                     "You can't provide the date without the meal."
                 )
+            
+            if "upvoteAction" in query:
+                upvoteAction = query["upvotedAction"][0]
+                upvoteCategory = None
+                if "upvoteCategory" in query:
+                    upvoteCategory = query["upvoteCategory"][0]
+                if upvoteAction == "upvote" and upvoteCategory not in validCategories:
+                    raise InvalidQueryException("Invalid Category Provided")
+                elif upvoteAction == "upvote":
+                    update_upvote_count(location, meal, date, upvoteCategory)
+                    return
+                elif upvoteAction == "view":
+                    upvote = get_upvote_count(location, meal, date, upvoteCategory)
+                    self.send_response_with_body(
+                        status_code=200,
+                        body=str(upvote),
+                    )
+                    return
 
             if USE_CACHE:
                 print(f"date from query params: {date}")

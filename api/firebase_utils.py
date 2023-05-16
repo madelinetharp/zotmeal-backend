@@ -36,3 +36,39 @@ def updateAnalytics(error=False) -> None:
 
 def get_Analytics() -> db.Reference:
     return db.reference("analytics")
+
+def get_upvote_count(location: str, meal: int, date: str, station: str) -> db.Reference:
+    if meal is None:
+        meal = get_current_meal()
+
+    if date is None:
+        irvine_time = get_irvine_time()
+        date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
+
+    modified_datestring = date.replace("/","|")
+    
+    # .get() returns None if nothing created
+    for i in db.reference(f"{location}/{modified_datestring}/{meal}/all").get():
+        if i["station"] == station:
+            return i["upvote"]
+    return -1
+
+def update_upvote_count(location: str, meal: int, date: str, station: str) :
+    if meal is None:
+        meal = get_current_meal()
+
+    if date is None:
+        irvine_time = get_irvine_time()
+        date = f"{irvine_time.tm_mon}/{irvine_time.tm_mday}/{irvine_time.tm_year}"
+
+    modified_datestring = date.replace("/","|")
+    
+    # .get() returns None if nothing created
+    ref = db.reference(f"{location}/{modified_datestring}/{meal}/all")
+    dbdata = ref.get()
+    count = 0
+    for i in dbdata:
+        if i["station"] == station:
+            ref = db.reference(f"{location}/{modified_datestring}/{meal}/all/{count}")
+            ref.update({'upvote': dbdata[count]["upvote"] + 1})
+        count+=1

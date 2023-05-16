@@ -70,7 +70,8 @@ def _get_menu(location, meal_id, date):
                 menu.append(
                     {
                         'station': station_name,
-                        'menu': [{'category': cat, 'items': items_combined}]
+                        'menu': [{'category': cat, 'items': items_combined}],
+                        'upvote': 0
                     }
                 )
             else:
