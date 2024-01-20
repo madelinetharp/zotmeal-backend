@@ -12,9 +12,10 @@ def get_menu_data(location, meal_id, date):
     perform get request for the diner_json and return the dict at diner_json['Menu']
     '''
     location_id = LOCATION_INFO[location]['id']
+    period_id = MEAL_TO_PERIOD[meal_id][0]
 
     #https://uci-campusdish-com.translate.goog/api/menu/GetMenus?locationId=3314&mode=Daily&date=12/14/2023
-    response = requests.get(f'https://uci-campusdish-com.translate.goog/api/menu/GetMenus?locationId={location_id}&date={date}&mode=Daily')
+    response = requests.get(f'https://uci-campusdish-com.translate.goog/api/menu/GetMenus?locationId={location_id}&date={date}&periodId={period_id}')
     if response.status_code == 200:
         payload = response.json()
         if 'Menu' in payload:
